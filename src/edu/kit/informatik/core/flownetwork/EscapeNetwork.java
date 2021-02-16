@@ -2,12 +2,13 @@ package edu.kit.informatik.core.flownetwork;
 
 import java.util.HashMap;
 
-public class EscapeNetwork extends FlowNetwork {
+public class EscapeNetwork extends FlowNetwork{
     HashMap<String, Integer> edgeNameTable;
 
     public EscapeNetwork(int vertices) {
         super(vertices);
         this.edgeNameTable = new HashMap<>();
+        if(!this.computeValidity()) throw new IllegalArgumentException("Graph is no valid Flow-Network");
     }
 
     public void addEscapeWay(String origin, String dest, int capacity){

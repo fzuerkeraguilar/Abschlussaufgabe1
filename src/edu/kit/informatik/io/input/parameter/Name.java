@@ -1,4 +1,4 @@
-package edu.kit.informatik.io.parameter;
+package edu.kit.informatik.io.input.parameter;
 
 public class Name extends Parameter{
     String name;
