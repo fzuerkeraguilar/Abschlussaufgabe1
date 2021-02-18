@@ -1,6 +1,6 @@
 package edu.kit.informatik.io.resources;
 
-import edu.kit.informatik.io.input.parameter.EscapeNetwork;
+import edu.kit.informatik.io.commands.parameter.EscapeNetwork;
 
 public class FormattedString{
     String input;

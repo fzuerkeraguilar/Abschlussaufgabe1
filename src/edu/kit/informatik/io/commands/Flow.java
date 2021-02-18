@@ -1,7 +1,7 @@
-package edu.kit.informatik.io.input;
+package edu.kit.informatik.io.commands;
 
-import edu.kit.informatik.io.input.parameter.Name;
-import edu.kit.informatik.io.input.parameter.Node;
+import edu.kit.informatik.io.commands.parameter.Name;
+import edu.kit.informatik.io.commands.parameter.Node;
 
 public class Flow extends Command{
     Name name;

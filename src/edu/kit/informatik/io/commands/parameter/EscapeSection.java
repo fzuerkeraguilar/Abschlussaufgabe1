@@ -1,6 +1,6 @@
-package edu.kit.informatik.io.input.parameter;
+package edu.kit.informatik.io.commands.parameter;
 
-public class EscapeSection extends Parameter {
+public class EscapeSection extends Parameter<EscapeSection> {
     Node origin;
     Node dest;
     int capacity;

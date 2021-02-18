@@ -1,6 +1,6 @@
-package edu.kit.informatik.io.input;
+package edu.kit.informatik.io.commands;
 
-import edu.kit.informatik.io.input.parameter.EscapeSection;
+import edu.kit.informatik.io.commands.parameter.EscapeSection;
 
 public class AddSection extends Command{
     public EscapeSection Section;

@@ -1,6 +1,6 @@
-package edu.kit.informatik.io.input;
+package edu.kit.informatik.io.commands;
 
-import edu.kit.informatik.io.input.parameter.EscapeNetwork;
+import edu.kit.informatik.io.commands.parameter.EscapeNetwork;
 
 public class AddNetwork extends Command{
     public EscapeNetwork Network;
