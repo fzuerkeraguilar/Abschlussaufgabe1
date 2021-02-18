@@ -1,6 +1,8 @@
 package edu.kit.informatik.model.flownetwork;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class EscapeNetwork extends FlowNetwork{
@@ -29,8 +31,8 @@ public class EscapeNetwork extends FlowNetwork{
         if(origin.equals(dest)) throw new IllegalArgumentException("Origin and destination may not be the same");
         if(capacity <= 0) throw new IllegalArgumentException("Capacity must be bigger than zero");
         if(!nodeNameTable.containsKey(origin)) throw new IllegalArgumentException("Origin node does not exist");
-        if(!nodeNameTable.containsKey(dest)) throw new IllegalArgumentException("Dest node does not exist");
-        Edge newEdge = new Edge(this.convertName(origin), this.convertName(dest), capacity);
+        if(!nodeNameTable.containsKey(dest)) throw new IllegalArgumentException("Destination node does not exist");
+        Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(dest), dest, capacity);
         this.addEdge(newEdge);
     }
 
@@ -57,14 +59,16 @@ public class EscapeNetwork extends FlowNetwork{
     }
 
     public String toString(){
+        ArrayList<Edge> tempSortEdges = new ArrayList<>();
         StringBuilder output = new StringBuilder();
         for(ArrayList<Edge> a : this.adjacencyArrayList){
-            for (Edge e : a) {
-                output.append(e.toString()) ;
-                output.append(System.lineSeparator());
-            }
+            tempSortEdges.addAll(a);
         }
-        output.deleteCharAt(output.length());
+        Collections.sort(tempSortEdges);
+        for(Edge e: tempSortEdges){
+            output.append(e.toString());
+        }
+        output.deleteCharAt(output.length() - 1);
         return output.toString();
     }
 
@@ -84,7 +88,7 @@ public class EscapeNetwork extends FlowNetwork{
     private boolean checkSource(int sourceIndex){
         for(ArrayList<Edge> a : this.adjacencyArrayList){
             for(Edge e : a){
-                if(e.getDest() == sourceIndex){
+                if(e.getDestIndex() == sourceIndex){
                     return false;
                 }
             }

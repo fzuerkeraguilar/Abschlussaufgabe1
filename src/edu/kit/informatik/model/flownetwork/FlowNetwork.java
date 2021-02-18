@@ -6,18 +6,26 @@ import java.util.Queue;
 
 public abstract class FlowNetwork implements Comparable<FlowNetwork>{
 
-    public class Edge{
+    public class Edge implements Comparable<Edge>{
         private final Node origin;
-        private final Node dest;
+        private final Node destination;
         private final int capacity;
         private int flow;
 
-        public Edge(int origin, int dest, int capacity) {
+        public Edge(int origin, String originIdentifier, int destination, String destinationIdentifier, int capacity) {
             assert capacity > 0;
-            this.origin = new Node(origin);
-            this.dest = new Node(dest);
+            this.origin = new Node(origin, originIdentifier);
+            this.destination = new Node(destination, destinationIdentifier);
             this.capacity = capacity;
             this.flow = 0;
+        }
+
+        @Override
+        public int compareTo(Edge o) {
+            if(this.getOriginIndex() == o.getOriginIndex()){
+                return this.destination.identifier.compareTo(o.destination.identifier);
+            }
+            return this.origin.identifier.compareTo(o.origin.identifier);
         }
 
         private void increaseFlow(int usage){
@@ -31,12 +39,12 @@ public abstract class FlowNetwork implements Comparable<FlowNetwork>{
             return capacity - flow;
         }
 
-        private int getOrigin(){
+        private int getOriginIndex(){
             return this.origin.index;
         }
 
-        public int getDest() {
-            return dest.index;
+        public int getDestIndex() {
+            return destination.index;
         }
 
         public int getCapacity() {
@@ -51,22 +59,43 @@ public abstract class FlowNetwork implements Comparable<FlowNetwork>{
             String output = "";
             output += this.origin.toString();
             output += this.capacity;
-            output += this.dest.toString();
+            output += this.destination.toString();
             return output;
+        }
+
+        public String getOriginIdentifier(){
+            return this.origin.identifier;
+        }
+
+        public String getDestIdentifier(){
+            return this.destination.identifier;
         }
     }
 
     public class Node{
+        public String identifier;
         private final int index;
         protected ArrayList<Edge> outgoingEdges;
+
         public Node(int index) {
             this.index = index;
             this.outgoingEdges = new ArrayList<>();
         }
 
+        public Node(int index, String identifier) {
+            this.index = index;
+            this.outgoingEdges = new ArrayList<>();
+            this.identifier = identifier;
+        }
+
+
         public void addEdge(Edge newEdge){
             //TODO add checks
-            this.outgoingEdges.add(newEdge.getDest(), newEdge);
+            this.outgoingEdges.add(newEdge.getDestIndex(), newEdge);
+        }
+
+        public String getIdentifier(){
+            return identifier;
         }
     }
 
@@ -86,8 +115,9 @@ public abstract class FlowNetwork implements Comparable<FlowNetwork>{
     }
 
     public void addEdge(Edge newEdge){
-        //TODO add checks
-        this.adjacencyArrayList.get(newEdge.getOrigin()).add(newEdge.getDest(), newEdge);
+        if(newEdge.origin.equals(newEdge.destination)) throw new IllegalArgumentException("Origin and destination may not be the same");
+        if(newEdge.getCapacity() <= 0) throw new IllegalArgumentException("Capacity must be bigger than zero");
+        this.adjacencyArrayList.get(newEdge.getOriginIndex()).add(newEdge.getDestIndex(), newEdge);
         this.nodes++;
     }
 
@@ -106,10 +136,10 @@ public abstract class FlowNetwork implements Comparable<FlowNetwork>{
             while (!nextNode.isEmpty()){
                 ArrayList<Edge> currentNode = this.adjacencyArrayList.get(nextNode.remove().index);
                 for(Edge e: currentNode){
-                    if(path.get(e.getDest()) == null && e.getDest() != this.source.index && e.getCapacity() > e.getFlow()) {
-                        path.add(e.getDest(), e);
-                        for(Edge f : this.adjacencyArrayList.get(e.getDest())){
-                            nextNode.add(f.dest);
+                    if(path.get(e.getDestIndex()) == null && e.getDestIndex() != this.source.index && e.getCapacity() > e.getFlow()) {
+                        path.add(e.getDestIndex(), e);
+                        for(Edge f : this.adjacencyArrayList.get(e.getDestIndex())){
+                            nextNode.add(f.destination);
                         }
                     }
                 }
@@ -121,11 +151,11 @@ public abstract class FlowNetwork implements Comparable<FlowNetwork>{
 
             int newFlow = Integer.MAX_VALUE;
 
-            for(Edge e = path.get(this.sink.index); e !=  null; e = path.get(e.getOrigin())){
+            for(Edge e = path.get(this.sink.index); e !=  null; e = path.get(e.getOriginIndex())){
                 newFlow = Math.min(newFlow, e.getRemainingCapacity());
             }
 
-            for(Edge e = path.get(this.sink.index); e !=  null; e = path.get(e.getOrigin())){
+            for(Edge e = path.get(this.sink.index); e !=  null; e = path.get(e.getOriginIndex())){
                 e.increaseFlow(newFlow);
             }
         }

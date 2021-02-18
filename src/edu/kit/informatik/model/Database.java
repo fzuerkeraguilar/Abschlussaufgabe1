@@ -13,7 +13,7 @@ public class Database {
         return this.escapeNetworkTable.get(name);
     }
 
-    //TODO vielleicht was anderes als ArrayList übergeben, vielleicht dafür separate Klasse erstellen?, oder addEscapeSection nutzen
+    //TODO vielleicht was anderes als ArrayList übergeben, vielleicht dafür separate Klasse erstellen?
     public void addEscapeNetwork(String name, ArrayList<FlowNetwork.Edge> edges){
         if(this.escapeNetworkTable.containsKey(name)) throw new IllegalArgumentException("Name is already in use");
         EscapeNetwork temp = new EscapeNetwork();
