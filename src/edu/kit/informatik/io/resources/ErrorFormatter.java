@@ -10,7 +10,7 @@ public class ErrorFormatter extends Exception{
         throw  new Exception(n + Error);
     }
 
-    public static void sectioErrorFormatting(String e, String Error) throws Exception {
+    public static void sectionErrorFormatting(String e, String Error) throws Exception {
         throw new Exception(e+Error);
     }
 

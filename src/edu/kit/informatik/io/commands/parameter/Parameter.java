@@ -1,6 +1,7 @@
 package edu.kit.informatik.io.commands.parameter;
 
-public abstract class Parameter<T> {
-    private T type;
+import java.util.ArrayList;
 
+public abstract class Parameter {
+    private ArrayList<Parameter> parameterList;
 }

@@ -1,20 +1,49 @@
 package edu.kit.informatik.model.flownetwork;
 
 
+import edu.kit.informatik.Terminal;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
 public class EscapeNetwork extends FlowNetwork{
-    //HashMap<String, Integer> edgeNameTable;
     HashMap<String, Integer> nodeNameTable;
     HashMap<String, HashMap<String, Long>> calculatedResults;
 
 
 
-    public EscapeNetwork() {
+    public EscapeNetwork(ArrayList<Edge> edges) {
         super();
         this.nodeNameTable = new HashMap<>();
+        for(Edge e: edges){
+            Terminal.printLine(e.toString());
+
+            //check if Origin Node already exist, gives it an index and stores its name, when not
+            if(this.nodeNameTable.containsKey(e.getOriginIdentifier())){
+                Terminal.printLine("tst");
+                e.getOrigin().setIndex(this.nodeNameTable.get(e.getOriginIdentifier()));
+            } else {
+                e.getOrigin().setIndex(this.nodes);
+                Terminal.printLine(e.getOriginIdentifier() + this.nodes);
+                this.adjacencyArrayList.add(this.nodes, new ArrayList<>());
+                this.nodeNameTable.put(e.getOriginIdentifier(), this.nodes);
+                this.nodes ++;
+            }
+
+            //check if dest Node already exists, gives it an index and stores its name, when not
+            if(this.nodeNameTable.containsKey(e.getDestIdentifier())){
+                e.getDestination().setIndex(this.nodeNameTable.get(e.getDestIdentifier()));
+            } else {
+                e.getDestination().setIndex(this.nodes);
+                Terminal.printLine(e.getDestIdentifier() + this.nodes);
+                this.adjacencyArrayList.add(this.nodes, new ArrayList<>());
+                this.nodeNameTable.put(e.getDestIdentifier(), this.nodes);
+                this.nodes ++;
+            }
+            //this.adjacencyArrayList.add(this.nodes, new ArrayList<Edge>());
+            this.adjacencyArrayList.get(e.getOriginIndex()).add(e);
+        }
         this.calculatedResults = new HashMap<>();
         //if(!this.computeValidity()) throw new IllegalArgumentException("Graph is no valid Flow-Network");
     }
@@ -29,7 +58,6 @@ public class EscapeNetwork extends FlowNetwork{
     public void addEscapeSection(String origin, String dest, int capacity){
         //TODO check ob, es auch die capacity eines Edges ändert, wenn es schon existiert
         if(origin.equals(dest)) throw new IllegalArgumentException("Origin and destination may not be the same");
-        if(capacity <= 0) throw new IllegalArgumentException("Capacity must be bigger than zero");
         if(!nodeNameTable.containsKey(origin)) throw new IllegalArgumentException("Origin node does not exist");
         if(!nodeNameTable.containsKey(dest)) throw new IllegalArgumentException("Destination node does not exist");
         Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(dest), dest, capacity);
@@ -65,13 +93,14 @@ public class EscapeNetwork extends FlowNetwork{
             tempSortEdges.addAll(a);
         }
         Collections.sort(tempSortEdges);
+        Terminal.printLine(tempSortEdges.toString());
         for(Edge e: tempSortEdges){
             output.append(e.toString());
+            output.append(System.lineSeparator());
         }
         output.deleteCharAt(output.length() - 1);
         return output.toString();
     }
-
 
 
     private int convertName(String name){

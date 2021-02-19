@@ -1,7 +1,8 @@
 package edu.kit.informatik.model;
 
+import edu.kit.informatik.Terminal;
+import edu.kit.informatik.model.flownetwork.Edge;
 import edu.kit.informatik.model.flownetwork.EscapeNetwork;
-import edu.kit.informatik.model.flownetwork.FlowNetwork;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,14 +14,12 @@ public class Database {
         return this.escapeNetworkTable.get(name);
     }
 
-    //TODO vielleicht was anderes als ArrayList übergeben, vielleicht dafür separate Klasse erstellen?
-    public void addEscapeNetwork(String name, ArrayList<FlowNetwork.Edge> edges){
-        if(this.escapeNetworkTable.containsKey(name)) throw new IllegalArgumentException("Name is already in use");
-        EscapeNetwork temp = new EscapeNetwork();
-        for(FlowNetwork.Edge e : edges){
-            temp.addEdge(e);
-        }
-        this.escapeNetworkTable.put(name, temp);
+    //TODO vielleicht was anderes als ArrayList übergeben,
+    public void addEscapeNetwork(String networkIdentifier, ArrayList<Edge> edges){
+        assert !this.escapeNetworkTable.containsKey(networkIdentifier);
+        EscapeNetwork temp = new EscapeNetwork(edges);
+        this.escapeNetworkTable.put(networkIdentifier, temp);
+        Terminal.printLine(networkIdentifier);
     }
 
     public String escapeNetworkToString(String networkName){
@@ -35,6 +34,10 @@ public class Database {
             throw new IllegalArgumentException(networkName + " does not exist");
         }
         return this.escapeNetworkTable.get(networkName).computeCapacity(sourceName, sinkName);
+    }
+
+    public String toString(String identifier){
+        return this.escapeNetworkTable.get(identifier).toString();
     }
 
 }
