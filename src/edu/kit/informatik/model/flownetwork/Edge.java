@@ -5,7 +5,7 @@ import edu.kit.informatik.Terminal;
 public class Edge implements Comparable<Edge> {
     private final Node origin;
     private final Node destination;
-    private final int capacity;
+    private int capacity;
     private int flow;
 
     public Edge(String originIdentifier, String destinationIdentifier, int capacity){
@@ -37,6 +37,12 @@ public class Edge implements Comparable<Edge> {
         }
         this.flow += usage;
     }
+
+    void setFlow(int flow){
+        this.flow = flow;
+    }
+
+
 
     int getRemainingCapacity() {
         return capacity - flow;
@@ -80,4 +86,6 @@ public class Edge implements Comparable<Edge> {
     public String getDestIdentifier() {
         return this.destination.getIdentifier();
     }
+
+    public void setCapacity(int newCapacity){this.capacity = newCapacity;}
 }

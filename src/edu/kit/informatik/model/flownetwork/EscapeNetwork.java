@@ -7,25 +7,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class EscapeNetwork extends FlowNetwork{
+public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwork> {
     HashMap<String, Integer> nodeNameTable;
-    HashMap<String, HashMap<String, Long>> calculatedResults;
+    ArrayList<Result> resultList;
+    String identifier;
 
 
 
-    public EscapeNetwork(ArrayList<Edge> edges) {
+    public EscapeNetwork(ArrayList<Edge> edges, String identifier){
         super();
+        this.identifier = identifier;
         this.nodeNameTable = new HashMap<>();
+        this.resultList = new ArrayList<>();
         for(Edge e: edges){
-            Terminal.printLine(e.toString());
-
             //check if Origin Node already exist, gives it an index and stores its name, when not
             if(this.nodeNameTable.containsKey(e.getOriginIdentifier())){
-                Terminal.printLine("tst");
                 e.getOrigin().setIndex(this.nodeNameTable.get(e.getOriginIdentifier()));
             } else {
                 e.getOrigin().setIndex(this.nodes);
-                Terminal.printLine(e.getOriginIdentifier() + this.nodes);
                 this.adjacencyArrayList.add(this.nodes, new ArrayList<>());
                 this.nodeNameTable.put(e.getOriginIdentifier(), this.nodes);
                 this.nodes ++;
@@ -36,15 +35,12 @@ public class EscapeNetwork extends FlowNetwork{
                 e.getDestination().setIndex(this.nodeNameTable.get(e.getDestIdentifier()));
             } else {
                 e.getDestination().setIndex(this.nodes);
-                Terminal.printLine(e.getDestIdentifier() + this.nodes);
                 this.adjacencyArrayList.add(this.nodes, new ArrayList<>());
                 this.nodeNameTable.put(e.getDestIdentifier(), this.nodes);
                 this.nodes ++;
             }
-            //this.adjacencyArrayList.add(this.nodes, new ArrayList<Edge>());
             this.adjacencyArrayList.get(e.getOriginIndex()).add(e);
         }
-        this.calculatedResults = new HashMap<>();
         //if(!this.computeValidity()) throw new IllegalArgumentException("Graph is no valid Flow-Network");
     }
 
@@ -62,6 +58,7 @@ public class EscapeNetwork extends FlowNetwork{
         if(!nodeNameTable.containsKey(dest)) throw new IllegalArgumentException("Destination node does not exist");
         Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(dest), dest, capacity);
         this.addEdge(newEdge);
+        this.resultList.clear();
     }
 
     /**
@@ -72,17 +69,16 @@ public class EscapeNetwork extends FlowNetwork{
      * @return max capacity of escape network
      */
     public long computeCapacity(String sourceName, String sinkName){
-        if(this.calculatedResults.containsKey(sourceName)){
-            if(this.calculatedResults.get(sourceName).containsKey(sinkName)){
-                return this.calculatedResults.get(sourceName).get(sinkName);
+        for(Result r : this.resultList){
+            if(r.source.identifier.equals(sourceName) && r.sink.identifier.equals(sinkName)){
+                return r.flowRate;
             }
         }
         this.setSource(this.convertName(sourceName));
         this.setSink(this.convertName(sinkName));
         long capacity = this.getCapacity();
-        HashMap<String, Long> temp = new HashMap<>();
-        temp.put(sinkName, capacity);
-        this.calculatedResults.put(sourceName, temp);
+        Result newResult = new Result(sourceName, sinkName, capacity);
+        this.resultList.add(newResult);
         return capacity;
     }
 
@@ -109,9 +105,8 @@ public class EscapeNetwork extends FlowNetwork{
     }
 
     private void setSource(int index){
-        if(!this.checkSource(index)) throw new IllegalArgumentException("this Node can't be a sink");
+        if(!this.checkSource(index)) throw new IllegalArgumentException("this Node can't be a source");
         this.source = new Node(index);
-        this.calculatedResults.clear();
     }
 
     private boolean checkSource(int sourceIndex){
@@ -128,11 +123,30 @@ public class EscapeNetwork extends FlowNetwork{
     private void setSink(int index){
         if(!this.checkSink(index)) throw new IllegalArgumentException("this Node can't be a sink");
         this.sink = new Node(index);
-        this.calculatedResults.clear();
     }
 
     private boolean checkSink(int sinkIndex){
         return this.adjacencyArrayList.get(sinkIndex).size() == 0;
+    }
+
+    public int getNodeNumber(){
+        return this.nodes;
+    }
+
+    public int compareTo(EscapeNetwork n){
+        if(this.nodes == n.nodes){
+            return this.identifier.compareTo(n.identifier);
+        } else {
+            return Integer.compare(n.nodes, this.nodes);
+        }
+    }
+
+    public String getIdentifier(){
+        return this.identifier;
+    }
+
+    public ArrayList<Result> getResultList(){
+        return this.resultList;
     }
 
 }

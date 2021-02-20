@@ -4,9 +4,10 @@ import edu.kit.informatik.Terminal;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Queue;
 
-public abstract class FlowNetwork implements Comparable<FlowNetwork>{
+public abstract class FlowNetwork{
 
     /**
      * For each node i stores all outgoing edges (EscapeSections) at index i
@@ -21,53 +22,65 @@ public abstract class FlowNetwork implements Comparable<FlowNetwork>{
     public FlowNetwork(){
         this.nodes = 0;
         this.adjacencyArrayList = new ArrayList<>(2);
-        Terminal.printLine(this.adjacencyArrayList.toString());
     }
 
     public void addEdge(Edge newEdge){
-        this.adjacencyArrayList.get(newEdge.getOriginIndex()).add(newEdge.getDestIndex(), newEdge);
-        this.nodes++;
+        for(Edge e : this.adjacencyArrayList.get(newEdge.getOriginIndex())){
+            if(e.getDestIndex() == newEdge.getDestIndex()){
+                e.setCapacity(newEdge.getCapacity());
+                return;
+            }
+        }
+        this.adjacencyArrayList.get(newEdge.getOriginIndex()).add(newEdge);
     }
 
 
-    public long getCapacity(){
+    public long getCapacity() {
         long capacity = 0;
-        for(ArrayList<Edge> a: this.adjacencyArrayList){
-            for(Edge e : a){
-                e.increaseFlow(0);
+        for (ArrayList<Edge> a : this.adjacencyArrayList) {
+            for (Edge e : a) {
+                e.setFlow(0);
             }
         }
-        while(true){
-            ArrayList<Edge> path = new ArrayList<>(this.adjacencyArrayList.size());
+        while (true) {
+            Edge[] visited = new Edge[this.adjacencyArrayList.size()];
             Queue<Node> nextNode = new ArrayDeque<>();
             nextNode.add(this.source);
-            while (!nextNode.isEmpty()){
+            while (!nextNode.isEmpty()) {
                 ArrayList<Edge> currentNode = this.adjacencyArrayList.get(nextNode.remove().getIndex());
-                for(Edge e: currentNode){
-                    if(path.get(e.getDestIndex()) == null && e.getDestIndex() != this.source.getIndex() && e.getCapacity() > e.getFlow()) {
-                        path.add(e.getDestIndex(), e);
-                        for(Edge f : this.adjacencyArrayList.get(e.getDestIndex())){
-                            nextNode.add(f.getDestination());
+                for (Edge e : currentNode) {
+                    if (visited[e.getDestIndex()] == null) {
+                        if (e.getCapacity() > e.getFlow()) {
+                            if (e.getDestIndex() != this.source.getIndex()) {
+                                visited[e.getDestIndex()] = e;
+                                nextNode.add(e.getDestination());
+                            } else {
+                                visited[e.getDestIndex()] = e;
+                                nextNode.clear();
+                                break;
+                            }
                         }
                     }
                 }
             }
 
-            if(path.get(this.sink.getIndex()) == null){
+            if (visited[this.sink.getIndex()] == null) {
                 break;
             }
 
             int newFlow = Integer.MAX_VALUE;
 
-            for(Edge e = path.get(this.sink.getIndex()); e !=  null; e = path.get(e.getOriginIndex())){
+            for (Edge e = visited[this.sink.getIndex()]; e != null; e = visited[e.getOriginIndex()]) {
                 newFlow = Math.min(newFlow, e.getRemainingCapacity());
             }
 
-            for(Edge e = path.get(this.sink.getIndex()); e !=  null; e = path.get(e.getOriginIndex())){
+            capacity += newFlow;
+
+            for (Edge e = visited[this.sink.getIndex()]; e != null; e = visited[e.getOriginIndex()]) {
                 e.increaseFlow(newFlow);
             }
         }
-    return capacity;
+        return capacity;
     }
 
     public int compareTo(FlowNetwork n){

@@ -37,6 +37,7 @@ public class CommandParser {
         final Matcher commandMatcher = commandPattern.matcher(input);
 
         if (!commandMatcher.matches()) {
+
             return null;
         }
 
@@ -64,7 +65,7 @@ public class CommandParser {
     }
 
     private static Command interpretCommand(String command, ArrayList<String> parameters){
-        if(parameters.size() == 1 && command.equals(AddSection.REGEX)) return new AddSection(parameters);
+        if(parameters.size() == AddSection.PARAM_COUNT && command.equals(AddSection.REGEX)) return new AddSection(parameters);
         switch (command){
             case AddNetwork.REGEX:
                 return new AddNetwork(parameters);
@@ -72,8 +73,8 @@ public class CommandParser {
                 return new Print(parameters);
             case Flow.REGEX:
                 return new Flow(parameters);
-            case ListNodes.REGEX:
-                return new ListNodes(parameters);
+            case ListResults.REGEX:
+                return new ListResults(parameters);
             default: return new ErrorHandler(command, parameters);
         }
     }
@@ -88,8 +89,8 @@ public class CommandParser {
         paramMatcher.find();
         String temp = paramMatcher.group();
 
-        ArrayList<String> tempparameter = new ArrayList<>(Arrays.asList(temp.split(" ")));
-        final ArrayList<String> parameters = new ArrayList<>(tempparameter);
+        ArrayList<String> tempParameter = new ArrayList<>(Arrays.asList(temp.split(" ")));
+        final ArrayList<String> parameters = new ArrayList<>(tempParameter);
 
         while (paramMatcher.find()) {
             parameters.add(paramMatcher.group());
