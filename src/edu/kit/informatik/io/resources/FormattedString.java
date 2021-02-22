@@ -1,18 +1,17 @@
 package edu.kit.informatik.io.resources;
 
-import edu.kit.informatik.io.commands.parameter.EscapeNetwork;
 
 public class FormattedString{
     String input;
     String formattedOutput;
 
-    //TODO StringFormatting implemetieren
+    //TODO StringFormatting implementieren
     public static String StringFormatting(String input, String name){
         return null;
     }
 
 
-    private String GraphFormatting(String input, EscapeNetwork input2){
+    private String GraphFormatting(){
         return null;
     }
 

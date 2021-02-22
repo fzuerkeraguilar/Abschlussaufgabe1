@@ -1,32 +1,35 @@
 package edu.kit.informatik.io;
 
-import edu.kit.informatik.Terminal;
-import edu.kit.informatik.io.commands.CommandParser;
-import edu.kit.informatik.io.commands.controllers.Command;
+import edu.kit.informatik.io.input.CommandParser;
+import edu.kit.informatik.io.commands.Command;
+import edu.kit.informatik.io.input.Input;
+import edu.kit.informatik.io.input.exceptions.InputException;
+import edu.kit.informatik.io.ouput.Output;
 import edu.kit.informatik.model.Database;
+import edu.kit.informatik.model.resources.DatabaseException;
 
 public class Session {
     private final Database database1 = new Database();
 
+    private final Output outputHandler = new Output();
     private final CommandParser commandParser = new CommandParser();
-    private boolean quit;
+    private final Input inputHandler = new Input();
+    private boolean quit = false;
 
     public Session(){}
 
-    //TODO Fehlerbehandlung an ErrorHandler auslagern
     public void run(){
-        this.quit = false;
         while(!quit){
-            String input = Terminal.readLine();
-            if(input.equals("quit")){
+            this.inputHandler.readInput();
+            if(inputHandler.getNextInput().equals("quit")){
                 this.quit();
-                return;
+                break;
             }
             try {
-                Command nextCommand = commandParser.parse(input);
-                nextCommand.execute(this.database1);
-            } catch (Exception e){
-                Terminal.printLine(e);
+                Command nextCommand = commandParser.parse(inputHandler.getNextInput());
+                outputHandler.print(nextCommand.execute(this.database1));
+            } catch (InputException | DatabaseException e){
+                outputHandler.printError(e.getMessage());
                 e.printStackTrace();
             }
 

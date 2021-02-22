@@ -1,11 +1,11 @@
 package edu.kit.informatik.model.flownetwork;
 
-public class Result implements Comparable<Result> {
+public class CapacityResult implements Comparable<CapacityResult> {
     Node source;
     Node sink;
     long flowRate;
 
-    public Result(String source, String sink, long flowRate){
+    public CapacityResult(String source, String sink, long flowRate){
         this.source = new Node(source);
         this.sink = new Node(sink);
         this.flowRate = flowRate;
@@ -13,7 +13,7 @@ public class Result implements Comparable<Result> {
 
 
     @Override
-    public int compareTo(Result r) {
+    public int compareTo(CapacityResult r) {
         if(this.flowRate == r.flowRate){
             if(this.source.identifier.equals(r.source.identifier)){
                 return this.sink.identifier.compareTo(r.sink.identifier);

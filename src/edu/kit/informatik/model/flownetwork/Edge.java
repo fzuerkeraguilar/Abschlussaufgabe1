@@ -38,13 +38,12 @@ public class Edge implements Comparable<Edge> {
         this.flow += usage;
     }
 
-    void setFlow(int flow){
-        this.flow = flow;
+    void resetFlow(){
+        this.flow = 0;
     }
 
 
-
-    int getRemainingCapacity() {
+    public int getRemainingCapacity() {
         return capacity - flow;
     }
 
@@ -64,6 +63,10 @@ public class Edge implements Comparable<Edge> {
         return flow;
     }
 
+    /**
+     * Returns String representation of given Edge
+     * @return this.origin.identifier + this.capacity + this.destination.identifier (<v_1><k><v_2>)
+     */
     public String toString() {
         String output = "";
         output += this.origin.toString();

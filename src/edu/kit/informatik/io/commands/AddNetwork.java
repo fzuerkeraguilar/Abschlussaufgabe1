@@ -1,9 +1,8 @@
-package edu.kit.informatik.io.commands.controllers;
+package edu.kit.informatik.io.commands;
 
-import edu.kit.informatik.Terminal;
-import edu.kit.informatik.io.ouput.Output;
 import edu.kit.informatik.model.Database;
 import edu.kit.informatik.model.flownetwork.Edge;
+import edu.kit.informatik.model.resources.DatabaseException;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -13,7 +12,7 @@ public class AddNetwork extends Command {
     public static final String REGEX = "add";
     private final String networkIdentifier;
     private final ArrayList<Edge> edges;
-    private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new section <e> to escape network <n>";
+    private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new escape network with identifier <n>.";
 
     public AddNetwork(ArrayList<String> parameters){
         edges = new ArrayList<>();
@@ -37,8 +36,8 @@ public class AddNetwork extends Command {
     }
 
     @Override
-    public void execute(Database database) {
+    public String execute(Database database) throws DatabaseException {
         database.addEscapeNetwork(this.networkIdentifier, edges);
-        Terminal.printLine(SUCCESSFUL_EXECUTION_MESSAGE);
+        return SUCCESSFUL_EXECUTION_MESSAGE;
     }
 }

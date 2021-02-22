@@ -1,7 +1,7 @@
-package edu.kit.informatik.io.commands;
+package edu.kit.informatik.io.input;
 
-import edu.kit.informatik.Terminal;
-import edu.kit.informatik.io.commands.controllers.*;
+import edu.kit.informatik.io.commands.*;
+import edu.kit.informatik.io.input.exceptions.InputException;
 import edu.kit.informatik.io.ouput.ErrorHandler;
 
 import java.util.ArrayList;
@@ -32,12 +32,11 @@ public class CommandParser {
 
     public CommandParser(){}
 
-    public Command parse(final String input){
+    public Command parse(final String input) throws InputException {
         final Pattern commandPattern = Pattern.compile(REGEX_COMMAND);
         final Matcher commandMatcher = commandPattern.matcher(input);
 
         if (!commandMatcher.matches()) {
-
             return null;
         }
 
@@ -50,8 +49,6 @@ public class CommandParser {
         final String parameterString = commandMatcher.group(REGEX_GROUP_COMMAND_PARAMETER);
         final ArrayList<String> parameters = extractParameters(parameterString);
 
-        Terminal.printLine(commandName);
-        Terminal.printLine(parameters);
 
         return interpretCommand(commandName, parameters);
     }
@@ -60,7 +57,7 @@ public class CommandParser {
         switch (command){
             case ListNetworks.REGEX:
                 return new ListNetworks();
-            default: return new ErrorHandler(command);
+            default: return new CommandNotFound(command);
         }
     }
 
@@ -75,7 +72,7 @@ public class CommandParser {
                 return new Flow(parameters);
             case ListResults.REGEX:
                 return new ListResults(parameters);
-            default: return new ErrorHandler(command, parameters);
+            default: return new CommandNotFound(command);
         }
     }
 

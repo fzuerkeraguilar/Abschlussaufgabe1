@@ -1,11 +1,8 @@
 package edu.kit.informatik.io.ouput;
 
-import edu.kit.informatik.io.commands.controllers.Command;
-import edu.kit.informatik.model.Database;
-
 import java.util.ArrayList;
 
-public class ErrorHandler extends Command {
+public class ErrorHandler {
 
     public ErrorHandler(String error){
 
@@ -15,8 +12,4 @@ public class ErrorHandler extends Command {
 
     }
 
-    @Override
-    public void execute(Database database) {
-
-    }
 }
