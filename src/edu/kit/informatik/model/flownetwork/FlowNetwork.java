@@ -127,8 +127,6 @@ public abstract class FlowNetwork{
             sinkFound = this.checkSink(i);
             i++;
         }
-        Terminal.printLine(sinkFound);
-        Terminal.printLine(sourceFound);
         return !sourceFound || !sinkFound;
     }
 

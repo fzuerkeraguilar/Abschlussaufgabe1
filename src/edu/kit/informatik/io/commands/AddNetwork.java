@@ -12,7 +12,7 @@ public class AddNetwork extends Command {
     public static final String REGEX = "add";
     private final String networkIdentifier;
     private final ArrayList<Edge> edges;
-    private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new escape network with identifier <n>.";
+    private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new escape network with identifier %s.";
 
     public AddNetwork(ArrayList<String> parameters){
         edges = new ArrayList<>();
@@ -38,6 +38,6 @@ public class AddNetwork extends Command {
     @Override
     public String execute(Database database) throws DatabaseException {
         database.addEscapeNetwork(this.networkIdentifier, edges);
-        return SUCCESSFUL_EXECUTION_MESSAGE;
+        return String.format(SUCCESSFUL_EXECUTION_MESSAGE, this.networkIdentifier);
     }
 }

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class AddSection extends Command {
     public static final String REGEX = "add";
     public static final int PARAM_COUNT = 2;
-    private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new section <e> to escape network <n>.";
+    private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new section %1$s to escape network %2$s.";
     private final String networkIdentifier;
     private final String origin;
     private final String dest;
@@ -19,7 +19,6 @@ public class AddSection extends Command {
 
     //TODO Befehl implementieren
     public AddSection(ArrayList<String> parameters){
-        Terminal.printLine(parameters.toString());
         this.networkIdentifier = parameters.remove(0);
         final Pattern commandPattern = Pattern.compile(REGEX_EDGE);
         final Matcher edgeMatcher = commandPattern.matcher(parameters.get(0));
@@ -34,6 +33,6 @@ public class AddSection extends Command {
     @Override
     public String execute(Database database) throws DatabaseException {
         database.addNewEscapeSection(this.networkIdentifier, this.origin, this.dest, this.cap);
-        return SUCCESSFUL_EXECUTION_MESSAGE;
+        return String.format(SUCCESSFUL_EXECUTION_MESSAGE, this.origin+this.cap+this.dest, this.networkIdentifier);
     }
 }
