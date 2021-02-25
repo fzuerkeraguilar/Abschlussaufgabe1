@@ -12,7 +12,7 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
     private final String identifier;
 
 
-    public EscapeNetwork(ArrayList<Edge> edges, String identifier) throws NotAValidEscapeNetwork, NoLongerAValidEscapeNetwork {
+    public EscapeNetwork(ArrayList<Edge> edges, String identifier) throws NotAValidEscapeNetwork, NoLongerAValidEscapeNetwork, IdentifierAlreadyInUse {
         super();
         this.identifier = identifier;
         this.nodeNameTable = new HashMap<>();
@@ -38,6 +38,11 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
                 this.nodeNameTable.put(e.getDestIdentifier(), this.nodes);
                 this.nodes ++;
             }
+            for(Edge edge: this.adjArrayList.get(e.getOriginIndex())){
+                if(e.getOriginIndex() == edge.getOriginIndex() && e.getDestIndex() == edge.getDestIndex()){
+                    throw new IdentifierAlreadyInUse(edge.toString());
+                }
+            }
             this.adjArrayList.get(e.getOriginIndex()).add(e);
         }
         if(this.networkNotValid()) throw new NotAValidEscapeNetwork(identifier);
@@ -56,7 +61,7 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
     public void addEscapeSection(String origin, String destination, int capacity) throws NoLongerAValidEscapeNetwork,
             SectionInOpposingDirectionException, SameOriginAndDestinationException, IdentifierNotFoundException {
         if(origin.equals(destination)) throw new SameOriginAndDestinationException();
-        boolean newOriginNode =  !this.nodeNameTable.containsKey(origin);;
+        boolean newOriginNode =  !this.nodeNameTable.containsKey(origin);
         boolean newDestinationNode = !this.nodeNameTable.containsKey(destination);
         //Checks if a sink and source node with give identifiers are already in use
         if(!newDestinationNode && !newOriginNode){
@@ -76,6 +81,7 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
         if(newDestinationNode && !newOriginNode){
             this.nodeNameTable.put(destination, this.nodes);
             this.nodes++;
+            this.adjArrayList.add(new ArrayList<>());
             Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
             this.addEdge(newEdge);
             this.capacityResultList.clear();
@@ -83,6 +89,7 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
         if(!newDestinationNode && newOriginNode){
             this.nodeNameTable.put(origin, this.nodes);
             this.nodes++;
+            this.adjArrayList.add(new ArrayList<>());
             Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
             this.addEdge(newEdge);
             this.capacityResultList.clear();
@@ -90,8 +97,10 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
         if(newDestinationNode && newOriginNode){
             this.nodeNameTable.put(origin, this.nodes);
             this.nodes++;
+            this.adjArrayList.add(new ArrayList<>());
             this.nodeNameTable.put(destination, this.nodes);
             this.nodes++;
+            this.adjArrayList.add(new ArrayList<>());
             Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
             this.addEdge(newEdge);
             this.capacityResultList.clear();

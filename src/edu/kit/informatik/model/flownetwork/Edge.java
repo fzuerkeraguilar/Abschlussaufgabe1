@@ -100,6 +100,6 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public Edge clone(){
-        return new Edge(this.getOriginIndex(), this.getOriginIdentifier(), this.getDestIndex(), this.getOriginIdentifier(), this.getCapacity());
+        return new Edge(this.getOriginIndex(), this.getOriginIdentifier(), this.getDestIndex(), this.getDestIdentifier(), this.getCapacity());
     }
 }

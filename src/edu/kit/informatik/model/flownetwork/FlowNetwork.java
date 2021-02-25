@@ -35,10 +35,8 @@ public abstract class FlowNetwork{
 
     public long getCapacity() {
         long capacity = 0;
-        ArrayList<ArrayList<Edge>> remainingCapacityNetwork = new ArrayList<>();
-        for(ArrayList<Edge> a : this.adjArrayList){
-            remainingCapacityNetwork.add((ArrayList<Edge>) a.clone());
-        }
+        ArrayList<ArrayList<Edge>> remainingCapacityNetwork;
+        remainingCapacityNetwork = this.cloneAdjList();
 
         for (ArrayList<Edge> a : remainingCapacityNetwork) {
             for (Edge e : a) {
@@ -71,7 +69,6 @@ public abstract class FlowNetwork{
 
                 }
             }
-            Terminal.printLine(Arrays.toString(visited));
             //Exists while loop, when no augmenting path is found
             if (visited[this.sink.getIndex()] == null) {
                 break;
@@ -144,10 +141,8 @@ public abstract class FlowNetwork{
     }
 
     protected void tryToAddEdge(Edge e) throws NoLongerAValidEscapeNetwork {
-        ArrayList<ArrayList<Edge>> adjListBackup = new ArrayList<>();
-        for(ArrayList<Edge> a : this.adjArrayList){
-            adjListBackup.add((ArrayList<Edge>) a.clone());
-        }
+        ArrayList<ArrayList<Edge>> adjListBackup;
+        adjListBackup = this.cloneAdjList();
         //TODO this.addEdge increases this.edge by one
         this.addEdge(e);
         if(this.networkNotValid()){

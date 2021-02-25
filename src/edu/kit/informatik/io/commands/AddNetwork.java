@@ -1,5 +1,6 @@
 package edu.kit.informatik.io.commands;
 
+import edu.kit.informatik.Terminal;
 import edu.kit.informatik.io.resources.exceptions.FalseFormatting;
 import edu.kit.informatik.io.resources.exceptions.ValueOutOfRange;
 import edu.kit.informatik.model.Database;
@@ -23,7 +24,7 @@ public class AddNetwork extends Command {
         final Pattern commandPattern = Pattern.compile(REGEX_EDGE);
 
         if(!parameters.get(0).matches(REGEX_NETWORK_IDENTIFIER)){
-            throw new IllegalArgumentException(parameters.get(0));
+            throw new FalseFormatting(REGEX_NETWORK_IDENTIFIER, parameters.get(0));
         }
         this.networkIdentifier = parameters.remove(0);
         for(String s : parameters){
@@ -32,7 +33,7 @@ public class AddNetwork extends Command {
             String origin = edgeMatcher.group();
             if(!edgeMatcher.find()) throw new FalseFormatting(s,"<e><k><e>" );
             long cap = Long.parseLong(edgeMatcher.group());
-            if(!(cap >= minCapacity && cap <= maxCapacity)){
+            if(cap < minCapacity || cap > maxCapacity){
                 throw new ValueOutOfRange(minCapacity, maxCapacity);
             }
             if(!edgeMatcher.find()) throw new FalseFormatting(s,"<e><k><e>" );
