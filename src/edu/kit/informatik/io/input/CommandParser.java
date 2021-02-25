@@ -1,8 +1,7 @@
 package edu.kit.informatik.io.input;
 
 import edu.kit.informatik.io.commands.*;
-import edu.kit.informatik.io.input.exceptions.InputException;
-import edu.kit.informatik.io.ouput.ErrorHandler;
+import edu.kit.informatik.io.resources.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,15 +52,15 @@ public class CommandParser {
         return interpretCommand(commandName, parameters);
     }
 
-    private static Command interpretCommand(String command){
+    private static Command interpretCommand(String command) throws CommandNotFoundException {
         switch (command){
             case ListNetworks.REGEX:
                 return new ListNetworks();
-            default: return new CommandNotFound(command);
+            default: throw new CommandNotFoundException(command);
         }
     }
 
-    private static Command interpretCommand(String command, ArrayList<String> parameters){
+    private static Command interpretCommand(String command, ArrayList<String> parameters) throws InputException {
         if(parameters.size() == AddSection.PARAM_COUNT && command.equals(AddSection.REGEX)) return new AddSection(parameters);
         switch (command){
             case AddNetwork.REGEX:
@@ -72,7 +71,7 @@ public class CommandParser {
                 return new Flow(parameters);
             case ListResults.REGEX:
                 return new ListResults(parameters);
-            default: return new CommandNotFound(command);
+            default: throw new CommandNotFoundException(command);
         }
     }
 

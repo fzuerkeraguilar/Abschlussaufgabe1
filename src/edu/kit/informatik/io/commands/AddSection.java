@@ -12,6 +12,8 @@ public class AddSection extends Command {
     public static final String REGEX = "add";
     public static final int PARAM_COUNT = 2;
     private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new section %1$s to escape network %2$s.";
+    private static final int minCapacity = 1;
+    private static final int maxCapacity = Integer.MAX_VALUE;
     private final String networkIdentifier;
     private final String origin;
     private final String dest;

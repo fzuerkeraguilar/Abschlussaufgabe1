@@ -3,9 +3,7 @@ package edu.kit.informatik.model;
 import edu.kit.informatik.model.flownetwork.Edge;
 import edu.kit.informatik.model.flownetwork.EscapeNetwork;
 import edu.kit.informatik.model.flownetwork.CapacityResult;
-import edu.kit.informatik.model.resources.DatabaseException;
-import edu.kit.informatik.model.resources.IdentifierAlreadyInUse;
-import edu.kit.informatik.model.resources.IdentifierNotFoundException;
+import edu.kit.informatik.model.resources.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +21,7 @@ public class Database {
      * @param edges List of all Edges that this new network should have
      */
     public void addEscapeNetwork(final String networkIdentifier,
-                                 final ArrayList<Edge> edges) throws IdentifierAlreadyInUse {
+                                 final ArrayList<Edge> edges) throws IdentifierAlreadyInUse, NotAValidEscapeNetwork, NoLongerAValidEscapeNetwork {
         if(this.escapeNetworkTable.containsKey(networkIdentifier)){
             throw new IdentifierAlreadyInUse(networkIdentifier);
         }
@@ -81,7 +79,7 @@ public class Database {
         for(EscapeNetwork n: networks){
             networkLister.append(n.getIdentifier());
             networkLister.append(" ");
-            networkLister.append(n.getNodeNumber());
+            networkLister.append(n.getNumberOfNodes());
             networkLister.append(System.lineSeparator());
         }
         return networkLister.substring(0, networkLister.length() - 1);

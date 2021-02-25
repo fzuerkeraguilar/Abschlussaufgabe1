@@ -3,7 +3,7 @@ package edu.kit.informatik.io;
 import edu.kit.informatik.io.input.CommandParser;
 import edu.kit.informatik.io.commands.Command;
 import edu.kit.informatik.io.input.Input;
-import edu.kit.informatik.io.input.exceptions.InputException;
+import edu.kit.informatik.io.resources.exceptions.InputException;
 import edu.kit.informatik.io.ouput.Output;
 import edu.kit.informatik.model.Database;
 import edu.kit.informatik.model.resources.DatabaseException;
@@ -28,9 +28,8 @@ public class Session {
             try {
                 Command nextCommand = commandParser.parse(inputHandler.getNextInput());
                 outputHandler.print(nextCommand.execute(this.database1));
-            } catch (InputException | DatabaseException e){
+            } catch (InputException | DatabaseException |  NullPointerException e){
                 outputHandler.printError(e.getMessage());
-                e.printStackTrace();
             }
 
         }

@@ -6,21 +6,27 @@ public class Edge implements Comparable<Edge> {
     private final Node origin;
     private final Node destination;
     private int capacity;
+    private int returnFlow;
     private int flow;
 
     public Edge(String originIdentifier, String destinationIdentifier, int capacity){
-        assert capacity > 0;
         this.origin = new Node(originIdentifier);
         this.destination = new Node(destinationIdentifier);
         this.capacity = capacity;
     }
 
     public Edge(int origin, String originIdentifier, int destination, String destinationIdentifier, int capacity) {
-        assert capacity > 0;
         this.origin = new Node(origin, originIdentifier);
         this.destination = new Node(destination, destinationIdentifier);
         this.capacity = capacity;
         this.flow = 0;
+    }
+
+    public Edge(int origin, int destination, int capacity, int flow){
+        this.origin = new Node(origin);
+        this.destination = new Node(destination);
+        this.capacity = capacity;
+        this.flow = flow;
     }
 
     @Override
@@ -91,4 +97,9 @@ public class Edge implements Comparable<Edge> {
     }
 
     public void setCapacity(int newCapacity){this.capacity = newCapacity;}
+
+    @Override
+    public Edge clone(){
+        return new Edge(this.getOriginIndex(), this.getOriginIdentifier(), this.getDestIndex(), this.getOriginIdentifier(), this.getCapacity());
+    }
 }

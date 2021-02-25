@@ -12,12 +12,13 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
     private final String identifier;
 
 
-    public EscapeNetwork(ArrayList<Edge> edges, String identifier){
+    public EscapeNetwork(ArrayList<Edge> edges, String identifier) throws NotAValidEscapeNetwork, NoLongerAValidEscapeNetwork {
         super();
         this.identifier = identifier;
         this.nodeNameTable = new HashMap<>();
         this.capacityResultList = new ArrayList<>();
         for(Edge e: edges){
+            if(e.getOriginIdentifier().equals(e.getDestIdentifier())) throw new NoLongerAValidEscapeNetwork(e.toString());
             //check if Origin Node already exist, gives it an index and stores its name, when not
             if(this.nodeNameTable.containsKey(e.getOriginIdentifier())){
                 e.getOrigin().setIndex(this.nodeNameTable.get(e.getOriginIdentifier()));
@@ -39,7 +40,7 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
             }
             this.adjArrayList.get(e.getOriginIndex()).add(e);
         }
-        if(this.networkNoLongerValid()) throw new IllegalArgumentException("Graph is no valid Flow-Network");
+        if(this.networkNotValid()) throw new NotAValidEscapeNetwork(identifier);
     }
 
     /**
@@ -48,17 +49,17 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
      * @param origin name of origin node
      * @param destination  name of destination node
      * @param capacity capacity of Section between origin and destination node
-     * @throws NotAValidEscapeNetwork - if new section would make escape network invalid
+     * @throws NoLongerAValidEscapeNetwork - if new section would make escape network invalid
      * @throws SectionInOpposingDirectionException - if a escape section in opposing direction already exists
      * @throws SameOriginAndDestinationException - if given escape section has same origin and destination
      */
-    public void addEscapeSection(String origin, String destination, int capacity) throws NotAValidEscapeNetwork,
+    public void addEscapeSection(String origin, String destination, int capacity) throws NoLongerAValidEscapeNetwork,
             SectionInOpposingDirectionException, SameOriginAndDestinationException, IdentifierNotFoundException {
-        boolean newOriginNode;
-        boolean newDestinationNode;
         if(origin.equals(destination)) throw new SameOriginAndDestinationException();
+        boolean newOriginNode =  !this.nodeNameTable.containsKey(origin);;
+        boolean newDestinationNode = !this.nodeNameTable.containsKey(destination);
         //Checks if a sink and source node with give identifiers are already in use
-        if(this.nodeNameTable.containsKey(origin) && this.nodeNameTable.containsKey(destination)){
+        if(!newDestinationNode && !newOriginNode){
             //checks if section in opposing direction is found
             for(Edge e: this.adjArrayList.get(this.convertName(destination))){
                 if(e.getDestIdentifier().equals(origin)){
@@ -69,32 +70,34 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
             Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
             //TODO das funkt nicht, fügt immer Edge hinzu
             this.tryToAddEdge(newEdge);
-        } else {
-            newOriginNode = !this.nodeNameTable.containsKey(origin);
-            newDestinationNode = !this.nodeNameTable.containsKey(destination);
-            //TODO aufräumen
-            if(newDestinationNode && !newOriginNode){
-                this.nodeNameTable.put(destination, this.nodes);
-                this.nodes++;
-                Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
-                this.addEdge(newEdge);
-            }
-            if(!newDestinationNode && newOriginNode){
-                this.nodeNameTable.put(origin, this.nodes);
-                this.nodes++;
-                Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
-                this.addEdge(newEdge);
-            }
-            if(newDestinationNode && newOriginNode){
-                this.nodeNameTable.put(origin, this.nodes);
-                this.nodes++;
-                this.nodeNameTable.put(destination, this.nodes);
-                this.nodes++;
-                Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
-                this.addEdge(newEdge);
-            }
-
+            this.capacityResultList.clear();
         }
+        //TODO aufräumen
+        if(newDestinationNode && !newOriginNode){
+            this.nodeNameTable.put(destination, this.nodes);
+            this.nodes++;
+            Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
+            this.addEdge(newEdge);
+            this.capacityResultList.clear();
+        }
+        if(!newDestinationNode && newOriginNode){
+            this.nodeNameTable.put(origin, this.nodes);
+            this.nodes++;
+            Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
+            this.addEdge(newEdge);
+            this.capacityResultList.clear();
+        }
+        if(newDestinationNode && newOriginNode){
+            this.nodeNameTable.put(origin, this.nodes);
+            this.nodes++;
+            this.nodeNameTable.put(destination, this.nodes);
+            this.nodes++;
+            Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
+            this.addEdge(newEdge);
+            this.capacityResultList.clear();
+        }
+
+
 
     }
 
@@ -111,8 +114,8 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
                 return r.flowRate;
             }
         }
-        this.setSource(this.convertName(sourceName));
-        this.setSink(this.convertName(sinkName));
+        if(!this.setSourceIndex(this.convertName(sourceName))) throw new NotAValidSource(sourceName);
+        if(!this.setSinkIndex(this.convertName(sinkName))) throw new NotAValidSink(sinkName);
         long capacity = this.getCapacity();
         CapacityResult newCapacityResult = new CapacityResult(sourceName, sinkName, capacity);
         this.capacityResultList.add(newCapacityResult);
