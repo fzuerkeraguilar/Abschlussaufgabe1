@@ -1,9 +1,9 @@
 package edu.kit.informatik.model.flownetwork;
 
 public class CapacityResult implements Comparable<CapacityResult> {
-    Node source;
-    Node sink;
-    long flowRate;
+    final Node source;
+    final Node sink;
+    final long flowRate;
 
     public CapacityResult(String source, String sink, long flowRate){
         this.source = new Node(source);

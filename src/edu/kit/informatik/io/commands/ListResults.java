@@ -13,6 +13,10 @@ public class ListResults extends Command {
     public static final int PARAM_COUNT = 1;
     String networkIdentifier;
 
+    public ListResults(ArrayList<String> parameters) {
+        assert parameters.size() == PARAM_COUNT;
+        this.networkIdentifier = parameters.get(0);
+    }
 
     @Override
     public String execute(Database database) throws DatabaseException {
@@ -29,10 +33,6 @@ public class ListResults extends Command {
         return resultBuilder.substring(0, resultBuilder.length() - 1);
     }
 
-    //TODO Befehl implementieren
-    public ListResults(ArrayList<String> parameters) {
-        assert parameters.size() == PARAM_COUNT;
-        this.networkIdentifier = parameters.get(0);
-    }
-    //TODO Setter, Getter
+
+
 }

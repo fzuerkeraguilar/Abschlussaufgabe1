@@ -28,7 +28,7 @@ public class Session {
             try {
                 Command nextCommand = commandParser.parse(inputHandler.getNextInput());
                 outputHandler.print(nextCommand.execute(this.database1));
-            } catch (InputException | DatabaseException |  NullPointerException e){
+            } catch (InputException | DatabaseException e){
                 outputHandler.printError(e.getMessage());
             }
 

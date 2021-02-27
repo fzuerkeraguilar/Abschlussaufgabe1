@@ -1,11 +1,9 @@
 package edu.kit.informatik.model.flownetwork;
 
-import edu.kit.informatik.Terminal;
 import edu.kit.informatik.model.resources.NoLongerAValidEscapeNetwork;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Queue;
 
 public abstract class FlowNetwork{
@@ -143,7 +141,6 @@ public abstract class FlowNetwork{
     protected void tryToAddEdge(Edge e) throws NoLongerAValidEscapeNetwork {
         ArrayList<ArrayList<Edge>> adjListBackup;
         adjListBackup = this.cloneAdjList();
-        //TODO this.addEdge increases this.edge by one
         this.addEdge(e);
         if(this.networkNotValid()){
             this.adjArrayList = adjListBackup;

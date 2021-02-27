@@ -1,7 +1,6 @@
 package edu.kit.informatik.io.commands;
 
 import edu.kit.informatik.model.Database;
-import edu.kit.informatik.model.resources.DatabaseException;
 
 import java.util.Objects;
 
@@ -11,10 +10,9 @@ public class ListNetworks extends Command {
 
 
     @Override
-    public String execute(Database database) throws DatabaseException {
+    public String execute(Database database) {
         String output = database.allNetworksToString();
         return Objects.requireNonNullElse(output, NO_NETWORK_FOUND);
-
     }
 
     public ListNetworks(){}

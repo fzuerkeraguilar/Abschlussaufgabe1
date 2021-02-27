@@ -43,6 +43,11 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
                     throw new IdentifierAlreadyInUse(edge.toString());
                 }
             }
+            for(Edge edge: this.adjArrayList.get(e.getDestIndex())){
+                if(e.getOriginIndex() == edge.getDestIndex() && e.getDestIndex() == edge.getOriginIndex()){
+                    throw new NoLongerAValidEscapeNetwork(e.toString());
+                }
+            }
             this.adjArrayList.get(e.getOriginIndex()).add(e);
         }
         if(this.networkNotValid()) throw new NotAValidEscapeNetwork(identifier);
@@ -73,7 +78,6 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
             }
             //tries to add new Section, but throws an Exception if it would make the escape network no longer valid
             Edge newEdge = new Edge(this.convertName(origin), origin, this.convertName(destination), destination, capacity);
-            //TODO das funkt nicht, fügt immer Edge hinzu
             this.tryToAddEdge(newEdge);
             this.capacityResultList.clear();
         }

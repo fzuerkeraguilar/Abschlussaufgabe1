@@ -90,21 +90,27 @@ public class Database {
         return this.escapeNetworkTable.get(networkIdentifier).getResultList();
     }
 
-    public String escapeNetworkToString(String networkIdentifier){
-        if(!this.escapeNetworkTable.containsKey(networkIdentifier)) {
-            throw new IllegalArgumentException(networkIdentifier + " does not exist");
-        }
-        return this.escapeNetworkTable.get(networkIdentifier).toString();
-    }
+// --Commented out by Inspection START (26.02.2021 17:40):
+//    public String escapeNetworkToString(String networkIdentifier){
+//        if(!this.escapeNetworkTable.containsKey(networkIdentifier)) {
+//            throw new IllegalArgumentException(networkIdentifier + " does not exist");
+//        }
+//        return this.escapeNetworkTable.get(networkIdentifier).toString();
+//    }
+// --Commented out by Inspection STOP (26.02.2021 17:40)
 
 
-    public EscapeNetwork getEscapeNetwork(String name){
-        return this.escapeNetworkTable.get(name);
-    }
+// --Commented out by Inspection START (26.02.2021 17:40):
+//    public EscapeNetwork getEscapeNetwork(String name){
+//        return this.escapeNetworkTable.get(name);
+//    }
+// --Commented out by Inspection STOP (26.02.2021 17:40)
 
-    public boolean containsNetwork(String networkIdentifier){
-        return this.escapeNetworkTable.containsKey(networkIdentifier);
-    }
+// --Commented out by Inspection START (26.02.2021 17:40):
+//    public boolean containsNetwork(String networkIdentifier){
+//        return this.escapeNetworkTable.containsKey(networkIdentifier);
+//    }
+// --Commented out by Inspection STOP (26.02.2021 17:40)
 
     private void checkNetworkIdentifier(String networkIdentifier) throws IdentifierNotFoundException {
         if(!this.escapeNetworkTable.containsKey(networkIdentifier)){

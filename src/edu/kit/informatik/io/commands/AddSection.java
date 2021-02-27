@@ -21,20 +21,20 @@ public class AddSection extends Command {
     private final String dest;
     private final long cap;
 
-    //TODO Befehl implementieren
     public AddSection(ArrayList<String> parameters) throws FalseFormatting, ValueOutOfRange {
         this.networkIdentifier = parameters.remove(0);
         final Pattern commandPattern = Pattern.compile(REGEX_EDGE);
         final Matcher edgeMatcher = commandPattern.matcher(parameters.get(0));
-        if(!edgeMatcher.find()) throw new FalseFormatting(parameters.get(0),"<e><k><e>" );
-        this.origin = edgeMatcher.group();
-        if(!edgeMatcher.find()) throw new FalseFormatting(parameters.get(0),"<e><k><e>" );
-        this.cap = Long.parseLong(edgeMatcher.group());
+        if(!edgeMatcher.matches()) throw new FalseFormatting(parameters.get(0),"<e><k><e>");
+
+        this.origin = edgeMatcher.group(1);
+
+        this.cap = Long.parseLong(edgeMatcher.group(2));
         if(cap < minCapacity || cap > maxCapacity){
             throw new ValueOutOfRange(minCapacity, maxCapacity);
         }
-        if(!edgeMatcher.find()) throw new FalseFormatting(parameters.get(0),"<e><k><e>" );
-        this.dest = edgeMatcher.group();
+
+        this.dest = edgeMatcher.group(3);
     }
 
     @Override

@@ -1,12 +1,9 @@
 package edu.kit.informatik.model.flownetwork;
 
-import edu.kit.informatik.Terminal;
-
 public class Edge implements Comparable<Edge> {
     private final Node origin;
     private final Node destination;
     private int capacity;
-    private int returnFlow;
     private int flow;
 
     public Edge(String originIdentifier, String destinationIdentifier, int capacity){
@@ -65,9 +62,11 @@ public class Edge implements Comparable<Edge> {
         return capacity;
     }
 
-    public int getFlow() {
-        return flow;
-    }
+// --Commented out by Inspection START (26.02.2021 17:40):
+//    public int getFlow() {
+//        return flow;
+//    }
+// --Commented out by Inspection STOP (26.02.2021 17:40)
 
     /**
      * Returns String representation of given Edge

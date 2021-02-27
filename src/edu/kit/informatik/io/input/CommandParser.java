@@ -1,5 +1,6 @@
 package edu.kit.informatik.io.input;
 
+import edu.kit.informatik.Terminal;
 import edu.kit.informatik.io.commands.*;
 import edu.kit.informatik.io.resources.exceptions.*;
 
@@ -11,7 +12,6 @@ import java.util.regex.Pattern;
 
 public class CommandParser {
 
-    private static final String REGEX_NETWORK_IDENTIFIER = "[A-Z]{1,6}";
 
     /** The regular expression of a single parameter*/
     private static final String REGEX_SINGLE_PARAMETER = "[^;\\n\\r]+";
@@ -21,11 +21,9 @@ public class CommandParser {
     /** The regular expression of a generic command,
      * containing one capturing group for the command and one for all parameters */
     private static final String REGEX_COMMAND = "(\\S+)(?: (" + REGEX_MULTIPLE_PARAMETER + "))?";
-    private static final int REGEX_GROUP_COMMAND_NAME = 1;
+    private static final int REGEX_GROUP_COMMAND_POSITION = 1;
     private static final int REGEX_GROUP_COMMAND_PARAMETER = 2;
 
-
-    private String input;
 
     public Command output;
 
@@ -36,10 +34,10 @@ public class CommandParser {
         final Matcher commandMatcher = commandPattern.matcher(input);
 
         if (!commandMatcher.matches()) {
-            return null;
+            throw new CommandNotFoundException(input);
         }
 
-        final String commandName = commandMatcher.group(REGEX_GROUP_COMMAND_NAME);
+        final String commandName = commandMatcher.group(REGEX_GROUP_COMMAND_POSITION);
 
         if (commandMatcher.groupCount() < 2 || commandMatcher.group(REGEX_GROUP_COMMAND_PARAMETER) == null) {
             return interpretCommand(commandName);
@@ -81,15 +79,18 @@ public class CommandParser {
         final Pattern singleParam = Pattern.compile(REGEX_SINGLE_PARAMETER);
         final Matcher paramMatcher = singleParam.matcher(parameterString);
 
-
         paramMatcher.find();
         String temp = paramMatcher.group();
+        Terminal.printLine(temp);
 
         ArrayList<String> tempParameter = new ArrayList<>(Arrays.asList(temp.split(" ")));
+        Terminal.printLine(tempParameter);
         final ArrayList<String> parameters = new ArrayList<>(tempParameter);
+        Terminal.printLine(parameters.toString());
 
         while (paramMatcher.find()) {
             parameters.add(paramMatcher.group());
+            Terminal.printLine(parameters.toString());
         }
 
         return parameters;
