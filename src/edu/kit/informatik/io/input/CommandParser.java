@@ -81,16 +81,12 @@ public class CommandParser {
 
         paramMatcher.find();
         String temp = paramMatcher.group();
-        Terminal.printLine(temp);
 
         ArrayList<String> tempParameter = new ArrayList<>(Arrays.asList(temp.split(" ")));
-        Terminal.printLine(tempParameter);
         final ArrayList<String> parameters = new ArrayList<>(tempParameter);
-        Terminal.printLine(parameters.toString());
 
         while (paramMatcher.find()) {
             parameters.add(paramMatcher.group());
-            Terminal.printLine(parameters.toString());
         }
 
         return parameters;
