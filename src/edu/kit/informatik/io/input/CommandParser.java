@@ -1,6 +1,5 @@
 package edu.kit.informatik.io.input;
 
-import edu.kit.informatik.Terminal;
 import edu.kit.informatik.io.commands.*;
 import edu.kit.informatik.io.resources.exceptions.*;
 
@@ -9,9 +8,12 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * This file is modified form the IPDCommandParser.java of the solution of the santorini game by Lucas Alber
+ * @author Fabian Manuel Zürker Aguilar
+ * @version 1.0
+ */
 public class CommandParser {
-
 
     /** The regular expression of a single parameter*/
     private static final String REGEX_SINGLE_PARAMETER = "[^;\\n\\r]+";
@@ -24,11 +26,17 @@ public class CommandParser {
     private static final int REGEX_GROUP_COMMAND_POSITION = 1;
     private static final int REGEX_GROUP_COMMAND_PARAMETER = 2;
 
+    /**
+     * Constructs a new command parser.
+     */
+    public CommandParser() { }
 
-    public Command output;
-
-    public CommandParser(){}
-
+    /**
+     * Parses the given String and returns a command object based on the given input
+     * @param input the input string
+     * @return Command object that corresponds with the given command
+     * @throws InputException if problem is detected during the construction of the Command object
+     */
     public Command parse(final String input) throws InputException {
         final Pattern commandPattern = Pattern.compile(REGEX_COMMAND);
         final Matcher commandMatcher = commandPattern.matcher(input);
@@ -51,7 +59,7 @@ public class CommandParser {
     }
 
     private static Command interpretCommand(String command) throws CommandNotFoundException {
-        switch (command){
+        switch (command) {
             case ListNetworks.REGEX:
                 return new ListNetworks();
             default: throw new CommandNotFoundException(command);
@@ -59,8 +67,10 @@ public class CommandParser {
     }
 
     private static Command interpretCommand(String command, ArrayList<String> parameters) throws InputException {
-        if(parameters.size() == AddSection.PARAM_COUNT && command.equals(AddSection.REGEX)) return new AddSection(parameters);
-        switch (command){
+        if (parameters.size() == AddSection.PARAM_COUNT && command.equals(AddSection.REGEX)) {
+            return new AddSection(parameters);
+        }
+        switch (command) {
             case AddNetwork.REGEX:
                 return new AddNetwork(parameters);
             case Print.REGEX:

@@ -1,29 +1,50 @@
-package edu.kit.informatik.model.flownetwork;
+package edu.kit.informatik.data.flownetwork;
 
-import edu.kit.informatik.model.resources.NoLongerAValidEscapeNetwork;
+import edu.kit.informatik.data.resources.NoLongerAValidEscapeNetworkException;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
 
-public abstract class FlowNetwork{
+/**
+ * model of a weighted graph that represents a flow network
+ * @author Fabian Manuel Zürker Aguilar
+ * @version 1.0
+ */
+public abstract class FlowNetwork {
 
     /**
      * For each node i stores all outgoing edges (EscapeSections) at index i
      */
     protected ArrayList<ArrayList<Edge>> adjArrayList;
+    /**
+     * Number of nodes in network
+     */
     protected int nodes;
+    /**
+     * Node which was assigned the function of the source of the flow
+     */
     protected Node source;
+    /**
+     * Node which was assigned the function of the sink of the flow
+     */
     protected Node sink;
 
-    public FlowNetwork(){
+    /**
+     * Constructor for empty flow network
+     */
+    public FlowNetwork() {
         this.nodes = 0;
         this.adjArrayList = new ArrayList<>(2);
     }
 
-    public void addEdge(Edge newEdge){
-        for(Edge e : this.adjArrayList.get(newEdge.getOriginIndex())){
-            if(e.getDestIndex() == newEdge.getDestIndex()){
+    /**
+     * Adding a new edge to existing flow network or updates its capacity
+     * @param newEdge edge to be added
+     */
+    protected void addEdge(Edge newEdge) {
+        for (Edge e : this.adjArrayList.get(newEdge.getOriginIndex())) {
+            if (e.getDestIndex() == newEdge.getDestIndex()) {
                 e.setCapacity(newEdge.getCapacity());
                 return;
             }
@@ -31,7 +52,11 @@ public abstract class FlowNetwork{
         this.adjArrayList.get(newEdge.getOriginIndex()).add(newEdge);
     }
 
-    public long getCapacity() {
+    /**
+     * Calculates the flow from the set source node to the set sink node
+     * @return capacity of this flow network
+     */
+    protected long getCapacity() {
         long capacity = 0;
         ArrayList<ArrayList<Edge>> remainingCapacityNetwork;
         remainingCapacityNetwork = this.cloneAdjList();
@@ -50,7 +75,7 @@ public abstract class FlowNetwork{
             while (!nextNode.isEmpty()) {
                 ArrayList<Edge> currentNode = remainingCapacityNetwork.get(nextNode.remove().getIndex());
                 for (Edge e : currentNode) {
-                    if(e.getDestIndex() != this.source.getIndex()){
+                    if (e.getDestIndex() != this.source.getIndex()) {
                         if (visited[e.getDestIndex()] == null) {
                             if (e.getRemainingCapacity() > 0) {
                                 if (e.getDestIndex() != this.sink.getIndex()) {
@@ -88,74 +113,97 @@ public abstract class FlowNetwork{
         return capacity;
     }
 
-    public int getNumberOfNodes(){
-        return this.nodes ;
+    /**
+     * Getter for the number of nodes
+     * @return number of nodes in this network
+     */
+    public int getNumberOfNodes() {
+        return this.nodes;
     }
 
-    protected boolean setSourceIndex(final int index){
-        if(!this.checkSource(index)) return false;
+    /**
+     * Sets the source node to a node with given index
+     * @param index index of source node
+     * @return true - if operation was successful; false - if node with given index can't be a source
+     */
+    protected boolean setSourceIndex(final int index) {
+        if (!this.checkSource(index)) return false;
         this.source = new Node(index);
         return true;
     }
 
-    protected boolean checkSource(final int sourceIndex){
-        for(ArrayList<Edge> a : this.adjArrayList){
-            for(Edge e : a){
-                if(e.getDestIndex() == sourceIndex){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    protected boolean setSinkIndex(final int index){
-        if(!this.checkSink(index)) return false;
+    /**
+     * Sets the sink node to a node with given index
+     * @param index index of sink node
+     * @return true - if operation was successful; false - if node with given index can't be a source
+     */
+    protected boolean setSinkIndex(final int index) {
+        if (!this.checkSink(index)) return false;
         this.sink = new Node(index);
         return true;
     }
 
-    protected boolean checkSink(final int sinkIndex){
-        if(this.adjArrayList.size() == sinkIndex){
-            return true;
-        }
-        return this.adjArrayList.get(sinkIndex).isEmpty();
-    }
-
-    protected boolean networkNotValid(){
+    /**
+     * Checks if network is invalid
+     * @return true - if network is invalid; false - if network is valid
+     */
+    protected boolean networkNotValid() {
         boolean sourceFound = false;
         boolean sinkFound = false;
         int i = 0;
-        while(!sourceFound && i < this.nodes){
+        while (!sourceFound && i < this.nodes) {
             sourceFound = this.checkSource(i);
             i++;
         }
         i = 0;
-        while(!sinkFound && i < this.nodes){
+        while (!sinkFound && i < this.nodes) {
             sinkFound = this.checkSink(i);
             i++;
         }
         return !sourceFound || !sinkFound;
     }
 
-    protected void tryToAddEdge(Edge e) throws NoLongerAValidEscapeNetwork {
+    /**
+     * Adds edge and if resulting network would is invalid reverts to old network
+     * @param e edge to be added
+     * @throws NoLongerAValidEscapeNetworkException - if the edge would make the resulting network would be invalid
+     */
+    protected void tryToAddEdge(Edge e) throws NoLongerAValidEscapeNetworkException {
         ArrayList<ArrayList<Edge>> adjListBackup;
         adjListBackup = this.cloneAdjList();
         this.addEdge(e);
-        if(this.networkNotValid()){
+        if (this.networkNotValid()) {
             this.adjArrayList = adjListBackup;
-            throw new NoLongerAValidEscapeNetwork(e.toString());
+            throw new NoLongerAValidEscapeNetworkException(e.toString());
         }
     }
 
-    private ArrayList<ArrayList<Edge>> cloneAdjList(){
+    private ArrayList<ArrayList<Edge>> cloneAdjList() {
         ArrayList<ArrayList<Edge>> output = new ArrayList<>();
-        for(int i = 0; i < this.adjArrayList.size(); i++){
+        for (int i = 0; i < this.adjArrayList.size(); i++) {
             output.add(new ArrayList<>());
-            for(Edge e : this.adjArrayList.get(i)){
+            for (Edge e : this.adjArrayList.get(i)) {
                 output.get(i).add(e.clone());
             }
         }
         return output;
+    }
+
+    private boolean checkSink(final int sinkIndex) {
+        if (this.adjArrayList.size() == sinkIndex) {
+            return true;
+        }
+        return this.adjArrayList.get(sinkIndex).isEmpty();
+    }
+
+    private boolean checkSource(final int sourceIndex) {
+        for (ArrayList<Edge> a : this.adjArrayList) {
+            for (Edge e : a) {
+                if (e.getDestIndex() == sourceIndex) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
