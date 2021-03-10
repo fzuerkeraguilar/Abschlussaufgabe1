@@ -6,7 +6,6 @@ package edu.kit.informatik.data.flownetwork;
  * @version 1.0
  */
 public class CapacityResult implements Comparable<CapacityResult> {
-    //TODO private und getter für die identifier?
     /**
      * Node that was used as the source of the flow during the calculation
      */

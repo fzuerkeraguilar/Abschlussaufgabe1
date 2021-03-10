@@ -1,10 +1,12 @@
 package edu.kit.informatik.io.commands;
 
+import edu.kit.informatik.data.flownetwork.Edge;
 import edu.kit.informatik.io.resources.exceptions.FalseFormattingException;
 import edu.kit.informatik.io.resources.exceptions.ValueOutOfRangeException;
 import edu.kit.informatik.data.Database;
 import edu.kit.informatik.data.resources.DatabaseException;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,9 +30,7 @@ public class AddSection extends Command {
     private static final int MIN_CAPACITY = 1;
     private static final int MAX_CAPACITY = Integer.MAX_VALUE;
     private final String networkIdentifier;
-    private final String origin;
-    private final String dest;
-    private final long cap;
+    private final Edge newEscapeSection;
 
     /**
      * Constructor of AddSection Object
@@ -44,14 +44,16 @@ public class AddSection extends Command {
         final Matcher edgeMatcher = commandPattern.matcher(parameters.get(0));
         if (!edgeMatcher.matches()) throw new FalseFormattingException(parameters.get(0), "<e><k><e>");
 
-        this.origin = edgeMatcher.group(1);
-
-        this.cap = Long.parseLong(edgeMatcher.group(2));
-        if (cap < MIN_CAPACITY || cap > MAX_CAPACITY) {
-            throw new ValueOutOfRangeException(MIN_CAPACITY, MAX_CAPACITY);
+        String origin = edgeMatcher.group(1);
+        BigInteger capacity = new BigInteger(edgeMatcher.group(2));
+        if(BigInteger.valueOf(MIN_CAPACITY).compareTo(capacity) > 0) {
+            throw new ValueOutOfRangeException(capacity, MIN_CAPACITY, MAX_CAPACITY);
         }
-
-        this.dest = edgeMatcher.group(3);
+        if(BigInteger.valueOf(MAX_CAPACITY).compareTo(capacity) < 0) {
+            throw new ValueOutOfRangeException(capacity, MIN_CAPACITY, MAX_CAPACITY);
+        }
+        String dest = edgeMatcher.group(3);
+        this.newEscapeSection = new Edge(0, origin,0 , dest, capacity.intValue());
     }
 
     /**
@@ -62,7 +64,7 @@ public class AddSection extends Command {
      */
     @Override
     public String execute(Database database) throws DatabaseException {
-        database.addNewEscapeSection(this.networkIdentifier, this.origin, this.dest, (int) this.cap);
-        return String.format(SUCCESSFUL_EXECUTION_MESSAGE, this.origin + this.cap + this.dest, this.networkIdentifier);
+        database.addNewEscapeSection(this.networkIdentifier, this.newEscapeSection);
+        return String.format(SUCCESSFUL_EXECUTION_MESSAGE, this.newEscapeSection.toString(), this.networkIdentifier);
     }
 }

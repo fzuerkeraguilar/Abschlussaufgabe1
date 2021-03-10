@@ -45,6 +45,6 @@ public class Flow extends Command {
      */
     @Override
     public String execute(Database database) throws DatabaseException {
-        return String.valueOf(database.getCapacity(networkIdentifier, source.getIdentifier(), sink.getIdentifier()));
+        return String.valueOf(database.getCapacity(networkIdentifier, source.identifier, sink.identifier));
     }
 }

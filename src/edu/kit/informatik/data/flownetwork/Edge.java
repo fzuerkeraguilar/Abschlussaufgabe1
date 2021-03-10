@@ -12,19 +12,7 @@ public class Edge implements Comparable<Edge> {
     private int flow;
 
     /**
-     * Constructor of new Edge, when only the names are given
-     * @param originIdentifier identifier of the node this edge originates from
-     * @param destinationIdentifier identifier of the node this edge terminates in
-     * @param capacity capacity of this edge
-     */
-    public Edge(String originIdentifier, String destinationIdentifier, int capacity) {
-        this.origin = new Node(originIdentifier);
-        this.destination = new Node(destinationIdentifier);
-        this.capacity = capacity;
-    }
-
-    /**
-     * Constructor of new Edge, when all parameters are known
+     * Constructor of new Edge
      * @param origin index of the node this edge originates from
      * @param originIdentifier identifier of the node this edge originates from
      * @param destination index of the node this edge terminates in
@@ -39,7 +27,7 @@ public class Edge implements Comparable<Edge> {
     }
 
     /**
-     * Constructor of new Edge, when only the indexes are known and a flow is given
+     * Constructor of unnamed return Edges used for calculating the capacity
      * @param origin index of the node this edge originates from
      * @param destination index of the node this edge terminates in
      * @param capacity capacity of this edge
@@ -54,10 +42,10 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public int compareTo(Edge e) {
-        if (this.origin.getIdentifier().equals(e.origin.getIdentifier())) {
-            return this.destination.getIdentifier().compareTo(e.destination.getIdentifier());
+        if (this.origin.identifier.equals(e.origin.identifier)) {
+            return this.destination.identifier.compareTo(e.destination.identifier);
         }
-        return this.origin.getIdentifier().compareTo(e.origin.getIdentifier());
+        return this.origin.identifier.compareTo(e.origin.identifier);
     }
 
     /**
@@ -86,21 +74,6 @@ public class Edge implements Comparable<Edge> {
         return capacity - flow;
     }
 
-    /**
-     * Gives the index of the node this edge originates from
-     * @return the index of the node this edge originates from; null if no index was given to node
-     */
-    public int getOriginIndex() {
-        return this.origin.getIndex();
-    }
-
-    /**
-     * Gives the index of the node this edge terminates in
-     * @return the index of the node this edge terminates in; null if no index was given to node
-     */
-    public int getDestIndex() {
-        return this.destination.getIndex();
-    }
 
     /**
      * Gives capacity of this edge
@@ -140,33 +113,17 @@ public class Edge implements Comparable<Edge> {
     }
 
     /**
-     * Gives the given identifier of the origin Node of this Edge
-     * @return the given identifier of the origin Node of this Edge
-     */
-    public String getOriginIdentifier() {
-        return this.origin.getIdentifier();
-    }
-
-    /**
-     * Gives the given identifier of the destination Node of this Edge
-     * @return the given identifier of the destination Node of this Edge
-     */
-    public String getDestIdentifier() {
-        return this.destination.getIdentifier();
-    }
-
-    /**
-     * Sets new capacity for this edge
+     * Updates capacity for this edge
      * @param newCapacity new capacity
      */
     public void setCapacity(int newCapacity) { this.capacity = newCapacity; }
 
     @Override
     public Edge clone() {
-        return new Edge(this.getOriginIndex(),
-                this.getOriginIdentifier(),
-                this.getDestIndex(),
-                this.getDestIdentifier(),
-                this.getCapacity());
+        return new Edge(this.origin.getIndex(),
+                this.origin.identifier,
+                this.destination.getIndex(),
+                this.destination.identifier,
+                this.capacity);
     }
 }

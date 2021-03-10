@@ -4,7 +4,6 @@ import edu.kit.informatik.io.commands.*;
 import edu.kit.informatik.io.resources.exceptions.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,15 +15,15 @@ import java.util.regex.Pattern;
 public class CommandParser {
 
     /** The regular expression of a single parameter*/
-    private static final String REGEX_SINGLE_PARAMETER = "[^;\\n\\r]+";
+    private static final String REGEX_SINGLE_PARAMETER = "[^;\\n\\r ]+";
     /** The regular expression of multiple parameters */
     private static final String REGEX_MULTIPLE_PARAMETER
-            = REGEX_SINGLE_PARAMETER + "(?:;" + REGEX_SINGLE_PARAMETER + ")*";
+            = "[^;\\n\\r]+" + "(?:;" + REGEX_SINGLE_PARAMETER + ")*";
     /** The regular expression of a generic command,
      * containing one capturing group for the command and one for all parameters */
     private static final String REGEX_COMMAND = "(\\S+)(?: (" + REGEX_MULTIPLE_PARAMETER + "))?";
-    private static final int REGEX_GROUP_COMMAND_POSITION = 1;
-    private static final int REGEX_GROUP_COMMAND_PARAMETER = 2;
+    private static final int REGEX_GROUP_COMMAND_INDEX = 1;
+    private static final int REGEX_GROUP_COMMAND_PARAMETER_INDEX = 2;
 
     /**
      * Constructs a new command parser.
@@ -45,13 +44,13 @@ public class CommandParser {
             throw new CommandNotFoundException(input);
         }
 
-        final String commandName = commandMatcher.group(REGEX_GROUP_COMMAND_POSITION);
+        final String commandName = commandMatcher.group(REGEX_GROUP_COMMAND_INDEX);
 
-        if (commandMatcher.groupCount() < 2 || commandMatcher.group(REGEX_GROUP_COMMAND_PARAMETER) == null) {
+        if (commandMatcher.groupCount() < 2 || commandMatcher.group(REGEX_GROUP_COMMAND_PARAMETER_INDEX) == null) {
             return interpretCommand(commandName);
         }
 
-        final String parameterString = commandMatcher.group(REGEX_GROUP_COMMAND_PARAMETER);
+        final String parameterString = commandMatcher.group(REGEX_GROUP_COMMAND_PARAMETER_INDEX);
         final ArrayList<String> parameters = extractParameters(parameterString);
 
 
@@ -89,11 +88,7 @@ public class CommandParser {
         final Pattern singleParam = Pattern.compile(REGEX_SINGLE_PARAMETER);
         final Matcher paramMatcher = singleParam.matcher(parameterString);
 
-        paramMatcher.find();
-        String temp = paramMatcher.group();
-
-        ArrayList<String> tempParameter = new ArrayList<>(Arrays.asList(temp.split(" ")));
-        final ArrayList<String> parameters = new ArrayList<>(tempParameter);
+        final ArrayList<String> parameters = new ArrayList<>();
 
         while (paramMatcher.find()) {
             parameters.add(paramMatcher.group());

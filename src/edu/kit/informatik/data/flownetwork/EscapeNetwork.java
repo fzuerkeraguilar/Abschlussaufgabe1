@@ -22,51 +22,52 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
      * @param identifier given identifier of this network
      * @throws NotAValidEscapeNetworkException if given List of escape section does not result in a valid network
      * @throws NoLongerAValidEscapeNetworkException if an escape section would make the network invalid
-     * @throws IdentifierAlreadyInUseException if an escape section is added twice
      */
     public EscapeNetwork(ArrayList<Edge> edges, String identifier) throws NotAValidEscapeNetworkException,
-            NoLongerAValidEscapeNetworkException,
-            IdentifierAlreadyInUseException {
+            NoLongerAValidEscapeNetworkException {
         super();
         this.identifier = identifier;
         this.nodeNameTable = new HashMap<>();
         this.capacityResultList = new ArrayList<>();
         for (Edge e: edges) {
-            if (e.getOriginIdentifier().equals(e.getDestIdentifier())) {
+            //checks if edge is a loop
+            if (e.getOrigin().identifier.equals(e.getDestination().identifier)) {
                 throw new NoLongerAValidEscapeNetworkException(e.toString());
             }
-            //checks if origin Node already exist, gives it an index and stores its name, when not
-            if (this.nodeNameTable.containsKey(e.getOriginIdentifier())) {
-                e.getOrigin().setIndex(this.nodeNameTable.get(e.getOriginIdentifier()));
+            //checks if Nodes of edge already exist and assigns it an index
+            //if origin Node is not found it is added to the Map
+            if (this.nodeNameTable.containsKey(e.getOrigin().identifier)) {
+                e.getOrigin().setIndex(this.nodeNameTable.get(e.getOrigin().identifier));
             } else {
                 e.getOrigin().setIndex(this.nodes);
                 this.adjArrayList.add(this.nodes, new ArrayList<>());
-                this.nodeNameTable.put(e.getOriginIdentifier(), this.nodes);
+                this.nodeNameTable.put(e.getOrigin().identifier, this.nodes);
                 this.nodes++;
             }
-            //checks if destination Node already exists, gives it an index and stores its name, when not
-            if (this.nodeNameTable.containsKey(e.getDestIdentifier())) {
-                e.getDestination().setIndex(this.nodeNameTable.get(e.getDestIdentifier()));
+            if (this.nodeNameTable.containsKey(e.getDestination().identifier)) {
+                e.getDestination().setIndex(this.nodeNameTable.get(e.getDestination().identifier));
             } else {
                 e.getDestination().setIndex(this.nodes);
                 this.adjArrayList.add(this.nodes, new ArrayList<>());
-                this.nodeNameTable.put(e.getDestIdentifier(), this.nodes);
+                this.nodeNameTable.put(e.getDestination().identifier, this.nodes);
                 this.nodes++;
             }
 
             //checks if an escape section in same direction already exists
-            for (Edge edge: this.adjArrayList.get(e.getOriginIndex())) {
-                if (e.getOriginIndex() == edge.getOriginIndex() && e.getDestIndex() == edge.getDestIndex()) {
-                    throw new IdentifierAlreadyInUseException(edge.toString());
-                }
-            }
-            //checks if an escape section in opposing direction already exists
-            for (Edge edge: this.adjArrayList.get(e.getDestIndex())) {
-                if (e.getOriginIndex() == edge.getDestIndex() && e.getDestIndex() == edge.getOriginIndex()) {
+            for (Edge edge: this.adjArrayList.get(e.getOrigin().getIndex())) {
+                if (e.getOrigin().getIndex() == edge.getOrigin().getIndex() &&
+                        e.getDestination().getIndex() == edge.getDestination().getIndex()) {
                     throw new NoLongerAValidEscapeNetworkException(e.toString());
                 }
             }
-            this.adjArrayList.get(e.getOriginIndex()).add(e);
+            //checks if an escape section in opposing direction already exists
+            for (Edge edge: this.adjArrayList.get(e.getDestination().getIndex())) {
+                if (e.getOrigin().getIndex() == edge.getDestination().getIndex() &&
+                        e.getDestination().getIndex() == edge.getOrigin().getIndex()) {
+                    throw new NoLongerAValidEscapeNetworkException(e.toString());
+                }
+            }
+            this.adjArrayList.get(e.getOrigin().getIndex()).add(e);
         }
         if (this.networkNotValid()) throw new NotAValidEscapeNetworkException(identifier);
     }
@@ -74,69 +75,42 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
     /**
      * Adds new escape section with given capacity for given source and origin node or updates capacity of
      * existing escape section
-     * @param origin name of origin node
-     * @param destination  name of destination node
-     * @param capacity capacity of Section between origin and destination node
+     * @param newEdge E
      * @throws NoLongerAValidEscapeNetworkException - if new section would make escape network invalid
      * @throws SectionInOpposingDirectionException - if a escape section in opposing direction already exists
      * @throws SameOriginAndDestinationException - if given escape section has same origin and destination
      */
-    public void addEscapeSection(String origin, String destination, int capacity) throws
+    public void addEscapeSection(Edge newEdge) throws
             NoLongerAValidEscapeNetworkException,
             SectionInOpposingDirectionException,
             SameOriginAndDestinationException,
             IdentifierNotFoundException {
-        if (origin.equals(destination)) throw new SameOriginAndDestinationException();
-        boolean newOriginNode =  !this.nodeNameTable.containsKey(origin);
-        boolean newDestinationNode = !this.nodeNameTable.containsKey(destination);
+        if (newEdge.getOrigin().identifier.equals(newEdge.getDestination().identifier)) {
+            throw new SameOriginAndDestinationException();
+        }
+        boolean newOriginNode =  !this.nodeNameTable.containsKey(newEdge.getOrigin().identifier);
+        boolean newDestinationNode = !this.nodeNameTable.containsKey(newEdge.getDestination().identifier);
         //Checks if a sink and source node with give identifiers are already in use
-        if (!newDestinationNode && !newOriginNode) {
-            //checks if section in opposing direction is found
-            for (Edge e: this.adjArrayList.get(this.convertName(destination))) {
-                if (e.getDestIdentifier().equals(origin)) {
-                    throw new SectionInOpposingDirectionException();
+        if(newOriginNode){
+            this.addNode(newEdge.getOrigin().identifier);
+            if(newDestinationNode){
+                this.addNode(newEdge.getDestination().identifier);
+            }
+        } else {
+            if(newDestinationNode){
+                this.addNode(newEdge.getDestination().identifier);
+            } else {
+                for (Edge e: this.adjArrayList.get(this.convertName(newEdge.getDestination().identifier))) {
+                    if (e.getDestination().identifier.equals(newEdge.getOrigin().identifier)) {
+                        throw new SectionInOpposingDirectionException();
+                    }
                 }
             }
-            //tries to add new Section, but throws an Exception if it would make the escape network no longer valid
-            Edge newEdge = new Edge(this.convertName(origin),
-                    origin, this.convertName(destination), destination, capacity);
-            this.tryToAddEdge(newEdge);
-            this.capacityResultList.clear();
         }
-        //TODO aufräumen
-        if (newDestinationNode && !newOriginNode) {
-            this.nodeNameTable.put(destination, this.nodes);
-            this.nodes++;
-            this.adjArrayList.add(new ArrayList<>());
-            Edge newEdge = new Edge(this.convertName(origin),
-                    origin, this.convertName(destination), destination, capacity);
-            this.addEdge(newEdge);
-            this.capacityResultList.clear();
-        }
-        if (!newDestinationNode && newOriginNode) {
-            this.nodeNameTable.put(origin, this.nodes);
-            this.nodes++;
-            this.adjArrayList.add(new ArrayList<>());
-            Edge newEdge = new Edge(this.convertName(origin),
-                    origin, this.convertName(destination), destination, capacity);
-            this.addEdge(newEdge);
-            this.capacityResultList.clear();
-        }
-        if (newDestinationNode && newOriginNode) {
-            this.nodeNameTable.put(origin, this.nodes);
-            this.nodes++;
-            this.adjArrayList.add(new ArrayList<>());
-            this.nodeNameTable.put(destination, this.nodes);
-            this.nodes++;
-            this.adjArrayList.add(new ArrayList<>());
-            Edge newEdge = new Edge(this.convertName(origin),
-                    origin, this.convertName(destination), destination, capacity);
-            this.addEdge(newEdge);
-            this.capacityResultList.clear();
-        }
-
-
-
+        newEdge.getOrigin().setIndex(this.convertName(newEdge.getOrigin().identifier));
+        newEdge.getDestination().setIndex(this.convertName(newEdge.getDestination().identifier));
+        this.addEdge(newEdge);
+        this.capacityResultList.clear();
     }
 
     /**
@@ -210,6 +184,12 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
     private int convertName(final String name) throws IdentifierNotFoundException {
         if (this.nodeNameTable.get(name) == null) throw new IdentifierNotFoundException(name);
         return this.nodeNameTable.get(name);
+    }
+
+    private void addNode(String identifier){
+        this.nodeNameTable.put(identifier, this.nodes);
+        this.nodes++;
+        this.adjArrayList.add(new ArrayList<>());
     }
 
 }

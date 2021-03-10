@@ -39,20 +39,6 @@ public abstract class FlowNetwork {
     }
 
     /**
-     * Adding a new edge to existing flow network or updates its capacity
-     * @param newEdge edge to be added
-     */
-    protected void addEdge(Edge newEdge) {
-        for (Edge e : this.adjArrayList.get(newEdge.getOriginIndex())) {
-            if (e.getDestIndex() == newEdge.getDestIndex()) {
-                e.setCapacity(newEdge.getCapacity());
-                return;
-            }
-        }
-        this.adjArrayList.get(newEdge.getOriginIndex()).add(newEdge);
-    }
-
-    /**
      * Calculates the flow from the set source node to the set sink node
      * @return capacity of this flow network
      */
@@ -75,14 +61,14 @@ public abstract class FlowNetwork {
             while (!nextNode.isEmpty()) {
                 ArrayList<Edge> currentNode = remainingCapacityNetwork.get(nextNode.remove().getIndex());
                 for (Edge e : currentNode) {
-                    if (e.getDestIndex() != this.source.getIndex()) {
-                        if (visited[e.getDestIndex()] == null) {
+                    if (e.getDestination().getIndex() != this.source.getIndex()) {
+                        if (visited[e.getDestination().getIndex()] == null) {
                             if (e.getRemainingCapacity() > 0) {
-                                if (e.getDestIndex() != this.sink.getIndex()) {
-                                    visited[e.getDestIndex()] = e;
+                                if (e.getDestination().getIndex() != this.sink.getIndex()) {
+                                    visited[e.getDestination().getIndex()] = e;
                                     nextNode.add(e.getDestination());
                                 } else {
-                                    visited[e.getDestIndex()] = e;
+                                    visited[e.getDestination().getIndex()] = e;
                                     nextNode.clear();
                                     break;
                                 }
@@ -99,14 +85,14 @@ public abstract class FlowNetwork {
 
             int newFlow = Integer.MAX_VALUE;
 
-            for (Edge e = visited[this.sink.getIndex()]; e != null; e = visited[e.getOriginIndex()]) {
+            for (Edge e = visited[this.sink.getIndex()]; e != null; e = visited[e.getOrigin().getIndex()]) {
                 newFlow = Math.min(newFlow, e.getRemainingCapacity());
             }
 
-            for (Edge e = visited[this.sink.getIndex()]; e != null; e = visited[e.getOriginIndex()]) {
+            for (Edge e = visited[this.sink.getIndex()]; e != null; e = visited[e.getOrigin().getIndex()]) {
                 e.increaseFlow(newFlow);
-                Edge returnFlow = new Edge(e.getDestIndex(), e.getOriginIndex(), 0, -newFlow);
-                remainingCapacityNetwork.get(e.getDestIndex()).add(returnFlow);
+                Edge returnFlow = new Edge(e.getDestination().getIndex(), e.getOrigin().getIndex(), 0, -newFlow);
+                remainingCapacityNetwork.get(e.getDestination().getIndex()).add(returnFlow);
             }
             capacity += newFlow;
         }
@@ -122,7 +108,7 @@ public abstract class FlowNetwork {
     }
 
     /**
-     * Sets the source node to a node with given index
+     * Sets the source node to a node with given index.
      * @param index index of source node
      * @return true - if operation was successful; false - if node with given index can't be a source
      */
@@ -133,7 +119,7 @@ public abstract class FlowNetwork {
     }
 
     /**
-     * Sets the sink node to a node with given index
+     * Sets the sink node to a node with given index.
      * @param index index of sink node
      * @return true - if operation was successful; false - if node with given index can't be a source
      */
@@ -144,7 +130,7 @@ public abstract class FlowNetwork {
     }
 
     /**
-     * Checks if network is invalid
+     * Checks if network is invalid.
      * @return true - if network is invalid; false - if network is valid
      */
     protected boolean networkNotValid() {
@@ -164,17 +150,24 @@ public abstract class FlowNetwork {
     }
 
     /**
-     * Adds edge and if resulting network would is invalid reverts to old network
-     * @param e edge to be added
-     * @throws NoLongerAValidEscapeNetworkException - if the edge would make the resulting network would be invalid
+     * Adds edge or updates capacity of existing edge.
+     * If resulting network is invalid reverts back to old network.
+     * @param newEdge Edge to be added
+     * @throws NoLongerAValidEscapeNetworkException - if the edge would make the resulting network would be invalid.
      */
-    protected void tryToAddEdge(Edge e) throws NoLongerAValidEscapeNetworkException {
+    protected void addEdge(Edge newEdge) throws NoLongerAValidEscapeNetworkException {
         ArrayList<ArrayList<Edge>> adjListBackup;
         adjListBackup = this.cloneAdjList();
-        this.addEdge(e);
+        for (Edge e : this.adjArrayList.get(newEdge.getOrigin().getIndex())) {
+            if (e.getDestination().getIndex() == newEdge.getDestination().getIndex()) {
+                e.setCapacity(newEdge.getCapacity());
+                return;
+            }
+        }
+        this.adjArrayList.get(newEdge.getOrigin().getIndex()).add(newEdge);
         if (this.networkNotValid()) {
             this.adjArrayList = adjListBackup;
-            throw new NoLongerAValidEscapeNetworkException(e.toString());
+            throw new NoLongerAValidEscapeNetworkException(newEdge.toString());
         }
     }
 
@@ -199,7 +192,7 @@ public abstract class FlowNetwork {
     private boolean checkSource(final int sourceIndex) {
         for (ArrayList<Edge> a : this.adjArrayList) {
             for (Edge e : a) {
-                if (e.getDestIndex() == sourceIndex) {
+                if (e.getDestination().getIndex() == sourceIndex) {
                     return false;
                 }
             }

@@ -35,18 +35,12 @@ public class Database {
     /**
      * To be used when an escape section needs to be added to an already existing network
      * @param networkIdentifier identifier of an already existing network
-     * @param originIdentifier identifier of the node the new escape section should originate from
-     * @param destinationIdentifier identifier of the node the new escape section should terminate in
-     * @param capacity capacity of the new escape section
      * @throws DatabaseException when problem found
      */
     public void addNewEscapeSection(final String networkIdentifier,
-                                    final String originIdentifier,
-                                    final String destinationIdentifier,
-                                    int capacity) throws DatabaseException {
+                                    final Edge newEscapeSection) throws DatabaseException {
         this.checkNetworkIdentifier(networkIdentifier);
-        this.escapeNetworkTable.get(networkIdentifier).addEscapeSection(originIdentifier, destinationIdentifier,
-                capacity);
+        this.escapeNetworkTable.get(networkIdentifier).addEscapeSection(newEscapeSection);
     }
 
     /**
@@ -108,27 +102,6 @@ public class Database {
         return this.escapeNetworkTable.get(networkIdentifier).getResultList();
     }
 
-// --Commented out by Inspection START (26.02.2021 17:40):
-//    public String escapeNetworkToString(String networkIdentifier){
-//        if(!this.escapeNetworkTable.containsKey(networkIdentifier)) {
-//            throw new IllegalArgumentException(networkIdentifier + " does not exist");
-//        }
-//        return this.escapeNetworkTable.get(networkIdentifier).toString();
-//    }
-// --Commented out by Inspection STOP (26.02.2021 17:40)
-
-
-// --Commented out by Inspection START (26.02.2021 17:40):
-//    public EscapeNetwork getEscapeNetwork(String name){
-//        return this.escapeNetworkTable.get(name);
-//    }
-// --Commented out by Inspection STOP (26.02.2021 17:40)
-
-// --Commented out by Inspection START (26.02.2021 17:40):
-//    public boolean containsNetwork(String networkIdentifier){
-//        return this.escapeNetworkTable.containsKey(networkIdentifier);
-//    }
-// --Commented out by Inspection STOP (26.02.2021 17:40)
 
     private void checkNetworkIdentifier(String networkIdentifier) throws IdentifierNotFoundException {
         if (!this.escapeNetworkTable.containsKey(networkIdentifier)) {

@@ -6,12 +6,14 @@ import edu.kit.informatik.data.Database;
 import edu.kit.informatik.data.flownetwork.Edge;
 import edu.kit.informatik.data.resources.DatabaseException;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * extends Command class
+ * Extends Command class.
+ * Implements functionality if a new escape network should be added.
  * used if a new network needs to be added
  * @author Fabian Manuel Zürker Aguilar
  * @version 1.0
@@ -41,7 +43,6 @@ public class AddNetwork extends Command {
 
         edges = new ArrayList<>();
         final Pattern commandPattern = Pattern.compile(REGEX_EDGE);
-        final Pattern nodePatter = Pattern.compile(REGEX_NODE_IDENTIFIER);
 
         if (!parameters.get(0).matches(REGEX_NETWORK_IDENTIFIER)) {
             throw new FalseFormattingException( parameters.get(0), REGEX_NETWORK_IDENTIFIER);
@@ -53,13 +54,15 @@ public class AddNetwork extends Command {
 
             String origin = edgeMatcher.group(1);
 
-            //TODO vielleicht zu BigInteger?
-            long cap = Long.parseLong(edgeMatcher.group(2));
-            if (cap < MIN_CAPACITY || cap > MAX_CAPACITY) {
-                throw new ValueOutOfRangeException(MIN_CAPACITY, MAX_CAPACITY);
+            BigInteger capacity = new BigInteger(edgeMatcher.group(2));
+            if(BigInteger.valueOf(MIN_CAPACITY).compareTo(capacity) > 0) {
+                throw new ValueOutOfRangeException(capacity, MIN_CAPACITY, MAX_CAPACITY);
+            }
+            if(BigInteger.valueOf(MAX_CAPACITY).compareTo(capacity) < 0) {
+                throw new ValueOutOfRangeException(capacity, MIN_CAPACITY, MAX_CAPACITY);
             }
             String dest = edgeMatcher.group(3);
-            Edge temp = new Edge(origin, dest, (int) cap);
+            Edge temp = new Edge(0, origin,0 , dest, capacity.intValue());
             this.edges.add(temp);
         }
     }
