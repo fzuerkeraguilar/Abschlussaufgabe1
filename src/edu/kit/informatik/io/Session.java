@@ -1,10 +1,10 @@
 package edu.kit.informatik.io;
 
 import edu.kit.informatik.io.input.CommandParser;
-import edu.kit.informatik.io.commands.Command;
 import edu.kit.informatik.io.input.Input;
-import edu.kit.informatik.io.resources.exceptions.InputException;
 import edu.kit.informatik.io.ouput.Output;
+import edu.kit.informatik.io.commands.Command;
+import edu.kit.informatik.io.resources.exceptions.InputException;
 import edu.kit.informatik.data.Database;
 import edu.kit.informatik.data.resources.DatabaseException;
 
@@ -22,18 +22,18 @@ public class Session {
     private boolean quit = false;
 
     /**
-     * constructor of new session
+     * Constructor of new session
      */
     public Session() { }
 
     /**
-     * main loop of application that handles input and output
+     * Main loop of application that handles input and output
      */
     public void run() {
         while (!quit) {
             this.inputHandler.readInput();
             if (this.inputHandler.getNextInput().equals(EXIT_COMMAND)) {
-                this.quit();
+                this.quit = true;
                 break;
             }
             try {
@@ -45,10 +45,4 @@ public class Session {
 
         }
     }
-
-
-    private void quit() {
-        this.quit = true;
-    }
-
 }

@@ -5,7 +5,7 @@ import edu.kit.informatik.data.Database;
 import edu.kit.informatik.data.flownetwork.Node;
 import edu.kit.informatik.data.resources.DatabaseException;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Subclass of Command class
@@ -28,7 +28,7 @@ public class Flow extends Command {
      * @param parameters List of parameters
      * @throws FalseFormattingException if parameters do not conform to specification
      */
-    public Flow(ArrayList<String> parameters) throws FalseFormattingException {
+    public Flow(List<String> parameters) throws FalseFormattingException {
         if (parameters.size() != PARAMETER_NUM) {
             throw new FalseFormattingException(parameters.toString(), "<n> <v_1> <v_2>");
         }

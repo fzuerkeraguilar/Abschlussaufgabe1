@@ -6,8 +6,8 @@ import edu.kit.informatik.data.Database;
 import edu.kit.informatik.data.flownetwork.Edge;
 import edu.kit.informatik.data.resources.DatabaseException;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +28,7 @@ public class AddNetwork extends Command {
     private static final int MAX_CAPACITY = Integer.MAX_VALUE;
     private static final String SUCCESSFUL_EXECUTION_MESSAGE = "Added new escape network with identifier %s.";
     private final String networkIdentifier;
-    private final ArrayList<Edge> edges;
+    private final List<Edge> edges;
 
     /**
      * to be used when new network should be added
@@ -36,7 +36,7 @@ public class AddNetwork extends Command {
      * @throws FalseFormattingException - if parameters are not formatted correctly
      * @throws ValueOutOfRangeException - if a value is out of range
      */
-    public AddNetwork(ArrayList<String> parameters) throws FalseFormattingException, ValueOutOfRangeException {
+    public AddNetwork(List<String> parameters) throws FalseFormattingException, ValueOutOfRangeException {
         if (parameters.size() < MIN_PARAMETER_NUM) {
             throw new FalseFormattingException(parameters.toString(), "<n> <e>");
         }
@@ -54,15 +54,17 @@ public class AddNetwork extends Command {
 
             String origin = edgeMatcher.group(1);
 
-            BigInteger capacity = new BigInteger(edgeMatcher.group(2));
-            if(BigInteger.valueOf(MIN_CAPACITY).compareTo(capacity) > 0) {
-                throw new ValueOutOfRangeException(capacity, MIN_CAPACITY, MAX_CAPACITY);
+            int capacity;
+            try {
+                capacity = Integer.parseInt(edgeMatcher.group(2));
+            } catch (NumberFormatException e) {
+                throw new ValueOutOfRangeException(e.getMessage());
             }
-            if(BigInteger.valueOf(MAX_CAPACITY).compareTo(capacity) < 0) {
-                throw new ValueOutOfRangeException(capacity, MIN_CAPACITY, MAX_CAPACITY);
+            if (capacity < MIN_CAPACITY) {
+                throw new ValueOutOfRangeException(Integer.toString(capacity), MIN_CAPACITY, MAX_CAPACITY);
             }
             String dest = edgeMatcher.group(3);
-            Edge temp = new Edge(0, origin,0 , dest, capacity.intValue());
+            Edge temp = new Edge(0, origin, 0, dest, capacity);
             this.edges.add(temp);
         }
     }

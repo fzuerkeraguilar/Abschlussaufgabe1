@@ -47,11 +47,6 @@ public abstract class FlowNetwork {
         ArrayList<ArrayList<Edge>> remainingCapacityNetwork;
         remainingCapacityNetwork = this.cloneAdjList();
 
-        for (ArrayList<Edge> a : remainingCapacityNetwork) {
-            for (Edge e : a) {
-                e.resetFlow();
-            }
-        }
         //Finds shortest path with remaining capacity and augments flow through that path
         while (true) {
             Edge[] visited = new Edge[remainingCapacityNetwork.size()];

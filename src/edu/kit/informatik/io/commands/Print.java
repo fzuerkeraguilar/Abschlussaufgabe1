@@ -4,7 +4,7 @@ import edu.kit.informatik.io.resources.exceptions.FalseFormattingException;
 import edu.kit.informatik.data.Database;
 import edu.kit.informatik.data.resources.DatabaseException;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * extends Command class
@@ -24,7 +24,7 @@ public class Print extends Command {
      * @param parameters List of inputted parameters
      * @throws FalseFormattingException when formatting doesn't follow guidelines
      */
-    public Print(ArrayList<String> parameters) throws FalseFormattingException {
+    public Print(List<String> parameters) throws FalseFormattingException {
         if (!parameters.get(0).matches(REGEX_NETWORK_IDENTIFIER)) {
             throw new FalseFormattingException(parameters.get(0), REGEX_NETWORK_IDENTIFIER);
         }

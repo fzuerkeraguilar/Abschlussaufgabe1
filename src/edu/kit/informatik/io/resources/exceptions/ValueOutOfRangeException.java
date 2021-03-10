@@ -1,7 +1,5 @@
 package edu.kit.informatik.io.resources.exceptions;
 
-import java.math.BigInteger;
-
 /**
  * Custom exception to be thrown when certain value is out of given range
  * @author Fabian Manuel Zürker Aguilar
@@ -16,7 +14,15 @@ public class ValueOutOfRangeException extends InputException {
      * @param lowerBound the minimum value a given input should be
      * @param upperBound the maximum value a given input should be
      */
-    public ValueOutOfRangeException(BigInteger value, int lowerBound, int upperBound) {
-        this.message = String.format(VALUE_OUT_OF_EXPECTED_RANGE, value.toString(), lowerBound, upperBound);
+    public ValueOutOfRangeException(String value, int lowerBound, int upperBound) {
+        this.message = String.format(VALUE_OUT_OF_EXPECTED_RANGE, value, lowerBound, upperBound);
+    }
+
+    /**
+     * For use with NumberFormatException, while parsing int
+     * @param message Message of NumberFormatException
+     */
+    public ValueOutOfRangeException(String message) {
+        this.message = message;
     }
 }

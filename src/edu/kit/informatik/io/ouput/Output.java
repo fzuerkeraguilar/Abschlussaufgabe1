@@ -9,7 +9,7 @@ import edu.kit.informatik.Terminal;
  */
 public class Output {
     /**
-     * displays message to user when command is executed successfully
+     * Displays message to user when command is executed successfully
      * @param output output that should be displayed to the user
      */
     public void print(String output) {
@@ -17,7 +17,7 @@ public class Output {
     }
 
     /**
-     * displays error message to user when execution encountered a problem
+     * Displays error message to user when execution encountered a problem
      * @param output error message that should be displayed to the user
      */
     public void printError(String output) {

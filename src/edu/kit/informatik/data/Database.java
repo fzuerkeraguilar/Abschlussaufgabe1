@@ -8,6 +8,7 @@ import edu.kit.informatik.data.resources.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Database class that stores all escape networks and handles the command that needs to be executed
@@ -23,7 +24,7 @@ public class Database {
      * @param edges List of all Edges that this new network should have
      */
     public void addEscapeNetwork(final String networkIdentifier,
-                                 final ArrayList<Edge> edges) throws IdentifierAlreadyInUseException,
+                                 final List<Edge> edges) throws IdentifierAlreadyInUseException,
             NotAValidEscapeNetworkException, NoLongerAValidEscapeNetworkException {
         if (this.escapeNetworkTable.containsKey(networkIdentifier)) {
             throw new IdentifierAlreadyInUseException(networkIdentifier);
@@ -35,6 +36,7 @@ public class Database {
     /**
      * To be used when an escape section needs to be added to an already existing network
      * @param networkIdentifier identifier of an already existing network
+     * @param newEscapeSection Escape section to be added
      * @throws DatabaseException when problem found
      */
     public void addNewEscapeSection(final String networkIdentifier,
@@ -76,7 +78,7 @@ public class Database {
      * @return all escape networks sorted line by line or {@code null} if no escape networks exist
      */
     public String allNetworksToString() {
-        ArrayList<EscapeNetwork> networks = new ArrayList<>(this.escapeNetworkTable.values());
+        List<EscapeNetwork> networks = new ArrayList<>(this.escapeNetworkTable.values());
         if (networks.size() == 0) {
             return null;
         }
@@ -97,7 +99,7 @@ public class Database {
      * @return List of all calculated results
      * @throws DatabaseException when problem is found
      */
-    public ArrayList<CapacityResult> getResults(String networkIdentifier) throws DatabaseException {
+    public List<CapacityResult> getResults(String networkIdentifier) throws DatabaseException {
         this.checkNetworkIdentifier(networkIdentifier);
         return this.escapeNetworkTable.get(networkIdentifier).getResultList();
     }

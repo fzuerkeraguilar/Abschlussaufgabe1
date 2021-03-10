@@ -5,6 +5,7 @@ import edu.kit.informatik.data.resources.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Model of an escape Network, with identifiers for nodes
@@ -13,7 +14,7 @@ import java.util.HashMap;
  */
 public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwork> {
     private final HashMap<String, Integer> nodeNameTable;
-    private final ArrayList<CapacityResult> capacityResultList;
+    private final List<CapacityResult> capacityResultList;
     private final String identifier;
 
     /**
@@ -23,7 +24,7 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
      * @throws NotAValidEscapeNetworkException if given List of escape section does not result in a valid network
      * @throws NoLongerAValidEscapeNetworkException if an escape section would make the network invalid
      */
-    public EscapeNetwork(ArrayList<Edge> edges, String identifier) throws NotAValidEscapeNetworkException,
+    public EscapeNetwork(List<Edge> edges, String identifier) throws NotAValidEscapeNetworkException,
             NoLongerAValidEscapeNetworkException {
         super();
         this.identifier = identifier;
@@ -55,15 +56,15 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
 
             //checks if an escape section in same direction already exists
             for (Edge edge: this.adjArrayList.get(e.getOrigin().getIndex())) {
-                if (e.getOrigin().getIndex() == edge.getOrigin().getIndex() &&
-                        e.getDestination().getIndex() == edge.getDestination().getIndex()) {
+                if (e.getOrigin().getIndex() == edge.getOrigin().getIndex()
+                        && e.getDestination().getIndex() == edge.getDestination().getIndex()) {
                     throw new NoLongerAValidEscapeNetworkException(e.toString());
                 }
             }
             //checks if an escape section in opposing direction already exists
             for (Edge edge: this.adjArrayList.get(e.getDestination().getIndex())) {
-                if (e.getOrigin().getIndex() == edge.getDestination().getIndex() &&
-                        e.getDestination().getIndex() == edge.getOrigin().getIndex()) {
+                if (e.getOrigin().getIndex() == edge.getDestination().getIndex()
+                        && e.getDestination().getIndex() == edge.getOrigin().getIndex()) {
                     throw new NoLongerAValidEscapeNetworkException(e.toString());
                 }
             }
@@ -91,13 +92,13 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
         boolean newOriginNode =  !this.nodeNameTable.containsKey(newEdge.getOrigin().identifier);
         boolean newDestinationNode = !this.nodeNameTable.containsKey(newEdge.getDestination().identifier);
         //Checks if a sink and source node with give identifiers are already in use
-        if(newOriginNode){
+        if (newOriginNode) {
             this.addNode(newEdge.getOrigin().identifier);
-            if(newDestinationNode){
+            if (newDestinationNode) {
                 this.addNode(newEdge.getDestination().identifier);
             }
         } else {
-            if(newDestinationNode){
+            if (newDestinationNode) {
                 this.addNode(newEdge.getDestination().identifier);
             } else {
                 for (Edge e: this.adjArrayList.get(this.convertName(newEdge.getDestination().identifier))) {
@@ -116,20 +117,22 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
     /**
      * Looks up if result already calculated or needs to be calculated
      * returns capacity of escape network for given source and sink
-     * @param sourceName identifier of source
-     * @param sinkName identifier of sink
+     * @param sourceIdentifier identifier of source
+     * @param sinkIdentifier identifier of sink
      * @return max capacity of escape network
      */
-    public long computeCapacity(String sourceName, String sinkName) throws DatabaseException {
+    public long computeCapacity(String sourceIdentifier, String sinkIdentifier) throws DatabaseException {
         for (CapacityResult r : this.capacityResultList) {
-            if (r.source.identifier.equals(sourceName) && r.sink.identifier.equals(sinkName)) {
+            if (r.source.identifier.equals(sourceIdentifier) && r.sink.identifier.equals(sinkIdentifier)) {
                 return r.flowRate;
             }
         }
-        if (!this.setSourceIndex(this.convertName(sourceName))) throw new NotAValidSourceException(sourceName);
-        if (!this.setSinkIndex(this.convertName(sinkName))) throw new NotAValidSinkException(sinkName);
+        if (!this.setSourceIndex(this.convertName(sourceIdentifier))) {
+            throw new NotAValidSourceException(sourceIdentifier);
+        }
+        if (!this.setSinkIndex(this.convertName(sinkIdentifier))) throw new NotAValidSinkException(sinkIdentifier);
         long capacity = this.getCapacity();
-        CapacityResult newCapacityResult = new CapacityResult(sourceName, sinkName, capacity);
+        CapacityResult newCapacityResult = new CapacityResult(sourceIdentifier, sinkIdentifier, capacity);
         this.capacityResultList.add(newCapacityResult);
         return capacity;
     }
@@ -144,7 +147,7 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
     public String toString() {
         ArrayList<Edge> tempSortEdges = new ArrayList<>();
         StringBuilder output = new StringBuilder();
-        for (ArrayList<Edge> a : this.adjArrayList) {
+        for (List<Edge> a : this.adjArrayList) {
             tempSortEdges.addAll(a);
         }
         Collections.sort(tempSortEdges);
@@ -177,19 +180,18 @@ public class EscapeNetwork extends FlowNetwork implements Comparable<EscapeNetwo
      * Getter for all already calculated results of this network
      * @return list of all already calculated results of this network
      */
-    public ArrayList<CapacityResult> getResultList() {
+    public List<CapacityResult> getResultList() {
         return this.capacityResultList;
     }
 
-    private int convertName(final String name) throws IdentifierNotFoundException {
-        if (this.nodeNameTable.get(name) == null) throw new IdentifierNotFoundException(name);
-        return this.nodeNameTable.get(name);
+    private int convertName(final String identifier) throws IdentifierNotFoundException {
+        if (this.nodeNameTable.get(identifier) == null) throw new IdentifierNotFoundException(identifier);
+        return this.nodeNameTable.get(identifier);
     }
 
-    private void addNode(String identifier){
+    private void addNode(String identifier) {
         this.nodeNameTable.put(identifier, this.nodes);
         this.nodes++;
         this.adjArrayList.add(new ArrayList<>());
     }
-
 }

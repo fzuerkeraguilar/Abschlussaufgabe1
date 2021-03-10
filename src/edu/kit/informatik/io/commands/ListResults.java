@@ -5,8 +5,8 @@ import edu.kit.informatik.data.Database;
 import edu.kit.informatik.data.flownetwork.CapacityResult;
 import edu.kit.informatik.data.resources.DatabaseException;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * extends Command class
@@ -28,7 +28,7 @@ public class ListResults extends Command {
      * @param parameters List of parameters
      * @throws FalseFormattingException if parameters do not conform to specification
      */
-    public ListResults(ArrayList<String> parameters) throws FalseFormattingException {
+    public ListResults(List<String> parameters) throws FalseFormattingException {
         if (parameters.size() != PARAM_COUNT) {
             throw new FalseFormattingException(parameters.toString(), "<n>");
         }
@@ -43,7 +43,7 @@ public class ListResults extends Command {
      */
     @Override
     public String execute(Database database) throws DatabaseException {
-        ArrayList<CapacityResult> capacityResults = database.getResults(this.networkIdentifier);
+        List<CapacityResult> capacityResults = database.getResults(this.networkIdentifier);
         if (capacityResults.size() == 0) {
             return NO_RESULT_FOUND;
         }

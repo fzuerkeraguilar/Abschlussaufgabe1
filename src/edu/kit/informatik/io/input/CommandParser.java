@@ -4,6 +4,7 @@ import edu.kit.informatik.io.commands.*;
 import edu.kit.informatik.io.resources.exceptions.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +52,7 @@ public class CommandParser {
         }
 
         final String parameterString = commandMatcher.group(REGEX_GROUP_COMMAND_PARAMETER_INDEX);
-        final ArrayList<String> parameters = extractParameters(parameterString);
+        final List<String> parameters = extractParameters(parameterString);
 
 
         return interpretCommand(commandName, parameters);
@@ -65,7 +66,7 @@ public class CommandParser {
         }
     }
 
-    private static Command interpretCommand(String command, ArrayList<String> parameters) throws InputException {
+    private static Command interpretCommand(String command, List<String> parameters) throws InputException {
         if (parameters.size() == AddSection.PARAM_COUNT && command.equals(AddSection.REGEX)) {
             return new AddSection(parameters);
         }
